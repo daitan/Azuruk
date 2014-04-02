@@ -5,14 +5,25 @@
 
 !.gitignore
 
+!Development
 !Development/LeftRightOut.sln
 !Development/LeftRightOut.suo
+!Development/Core
 !Development/Core/*
+!Development/Flash
+!Development/LeftRightOut
 !Development/Flash/LeftRightOut/*
+!Development/Src
 !Development/Src/AzurukGame.ucproj
 !Development/Src/AzurukGame.ucproj.user
 !Development/Src/AzurukGame/*
 
+!UDKGame
+!UDKGame/Config
 !UDKGame/Config/*
+!UDKGame/Content/
+!UDKGame/Content/LeftRightOut
 !UDKGame/Content/LeftRightOut/*
+!UDKGame/Content/Maps
+!UDKGame/Content/Maps/LeftRightOut
 !UDKGame/Content/Maps/LeftRightOut/*
