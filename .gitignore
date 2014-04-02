@@ -4,18 +4,24 @@
 # Except these files
 
 !.gitignore
+!*/
+!*.sln
+!*.suo
+!*.ucproj
+!*.user
+!*.uc
+!*.xml
+!*.ini
+!*.upk
+!*.udk
 
 !Development
-!Development/LeftRightOut.sln
-!Development/LeftRightOut.suo
 !Development/Core
 !Development/Core/*
 !Development/Flash
 !Development/LeftRightOut
 !Development/Flash/LeftRightOut/*
 !Development/Src
-!Development/Src/AzurukGame.ucproj
-!Development/Src/AzurukGame.ucproj.user
 !Development/Src/AzurukGame/*
 
 !UDKGame
