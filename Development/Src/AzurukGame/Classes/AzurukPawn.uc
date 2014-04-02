@@ -3,6 +3,8 @@ class AzurukPawn extends UDKPawn
 
 // Constants
 var() const DynamicLightEnvironmentComponent LightEnvironment;
+var() const Name SwordHandSocketName;
+var AnimNodePlayCustomAnim SwingAnim;
 
 // Camera Type Controller
 simulated function name GetDefaultCameraMode( PlayerController RequestedBy )
@@ -52,4 +54,33 @@ DefaultProperties
     End Object
     Mesh=MySkeletalMeshComponent
     Components.Add(MySkeletalMeshComponent)
+}
+
+simulated function bool isBlocking()
+{
+	return blockingState;
+}
+
+simulated function StartFire(byte FireModeNum)
+{
+	super.StartFire(FireModeNum);
+	if(FireModeNum == 1)
+			blockingState = true;
+}
+
+simulated function StopFire(byte FireModeNum)
+{
+	super.StartFire(FireModeNum);
+	if(FireModeNum == 1)
+			blockingState = false;
+}
+
+simulated event PostInitAnimTree(SkeletalMeshComponent SkelComp)
+{
+	super.PostInitAnimTree(SkelComp);
+
+    if (SkelComp == Mesh)
+    {
+        SwingAnim = AnimNodePlayCustomAnim(SkelComp.FindAnimNode('SwingCustomAnim'));
+    }
 }
