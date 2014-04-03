@@ -1,4 +1,5 @@
-class AzurukGameInfo extends UDKGame;
+class AzurukGameInfo extends UDKGame
+	config(AzurukGameInfo);
 
 var() archetype AzurukPawn PawnArchetype;
 var() archetype AzurukWeaponSword SwordArchetype;
@@ -36,7 +37,8 @@ event AddDefaultInventory(Pawn P)
 
 DefaultProperties
 {
-	SwordArchetype=AzurukWeaponSword'AzurukContent.Archetypes.AzurukSword'
+	HUDType=class'AzurukGame.AzurukHUD'
+	SwordArchetype=AzurukWeaponSword'AzurukContent.Archetypes.AzurukWeaponSword'
 	PawnArchetype=PlayerPawn'AzurukContent.Archetypes.PlayerPawn'
 	PlayerControllerClass=class'AzurukGame.AzurukPlayerController'
 }

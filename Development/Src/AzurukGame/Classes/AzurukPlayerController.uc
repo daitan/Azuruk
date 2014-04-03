@@ -12,6 +12,11 @@ exec function GBA_ZoomOut()
 	AzurukCamera(PlayerCamera).ZoomOut();
 }
 
+/* SpawnDefaultHUD()
+Spawn a HUD (make sure that PlayerController always has valid HUD, even if \
+ClientSetHUD() hasn't been called\
+*/
+
 DefaultProperties
 {
 	CameraClass=class'AzurukGame.AzurukCamera'

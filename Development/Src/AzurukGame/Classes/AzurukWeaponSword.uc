@@ -11,17 +11,17 @@ var const int MaxSwings;
 
 reliable client function ClientGivenTo(Pawn NewOwner, bool bDoNotActivate)
 {
-    local PlayerPawn MWPawn;
+    local PlayerPawn PPawn;
 
     super.ClientGivenTo(NewOwner, bDoNotActivate);
 
-    MWPawn = PlayerPawn(NewOwner);
+    PPawn = PlayerPawn(NewOwner);
 
-    if (MWPawn != none && MWPawn.Mesh.GetSocketByName(MWPawn.SwordHandSocketName) != none)
+    if (PPawn != none && PPawn.Mesh.GetSocketByName(PPawn.SwordHandSocketName) != none)
     {
-        Mesh.SetShadowParent(MWPawn.Mesh);
-        Mesh.SetLightEnvironment(MWPawn.LightEnvironment);
-        MWPawn.Mesh.AttachComponentToSocket(Mesh, MWPawn.SwordHandSocketName);
+        Mesh.SetShadowParent(PPawn.Mesh);
+        Mesh.SetLightEnvironment(PPawn.LightEnvironment);
+        PPawn.Mesh.AttachComponentToSocket(Mesh, PPawn.SwordHandSocketName);
    }
 }
 

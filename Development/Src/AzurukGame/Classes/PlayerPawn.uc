@@ -8,13 +8,17 @@ var AnimNodePlayCustomAnim SwingAnim;
 
 // Vars
 var PawnFeatures morphSets[4];
+var int i;
+var int MorphEnergyMax[4];
+var int MorphEnergyCurrent[4];
+var int MorphEnergyDrainRate[4];
 var int currentSet;
 var Pawn interactingPawn;
 var bool blockingState;
-
 // Transform Execute Function
 exec function GBA_Transform()
 {
+	SetTimer(0.1f, true, 'DrainMorphEnergyFormOne');
 	Mesh.SetSkeletalMesh(morphSets[0].pawnMesh);
 }
 
@@ -89,9 +93,49 @@ simulated event PostInitAnimTree(SkeletalMeshComponent SkelComp)
     }
 }
 
+simulated function int GetMorphEnergyCurrent(int morph)
+{
+	return MorphEnergyCurrent[morph];
+}
+
+simulated function int GetMorphEnergyMax(int morph)
+{
+	return MorphEnergyMax[morph];
+}
+
+simulated function DrainMorphEnergyFormOne()
+{
+	if (MorphEnergyCurrent[0] > 0)
+	{
+		MorphEnergyCurrent[0] -= MorphEnergyDrainRate[0];
+	}
+
+	if (MorphEnergyCurrent[0] <= 0)
+	{
+		StopMorphFormOne();
+	}
+}
+
+exec function StopMorphFormOne()
+{
+	ClearTimer('DrainMorphEnergyFormOne');
+}
 DefaultProperties
 {
 	InventoryManagerClass=class'AzurukGame.AzurukInventoryManager'
+	
+	MorphEnergyMax[0]=100
+	MorphEnergyMax[1]=100
+	MorphEnergyMax[2]=100
+	MorphEnergyMax[3]=100
+	MorphEnergyCurrent[0]=100
+	MorphEnergyCurrent[1]=100
+	MorphEnergyCurrent[2]=100
+	MorphEnergyCurrent[3]=100
+	MorphEnergyDrainRate[0]=1.f
+	MorphEnergyDrainRate[1]=1.f
+	MorphEnergyDrainRate[2]=1.f
+	MorphEnergyDrainRate[3]=1.f
 
 	Components.Remove(Sprite)
 
