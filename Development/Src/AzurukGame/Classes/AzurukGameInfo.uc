@@ -1,6 +1,7 @@
 class AzurukGameInfo extends UDKGame;
 
 var() archetype AzurukPawn PawnArchetype;
+var() archetype AzurukWeaponSword SwordArchetype;
 
 function Pawn SpawnDefaultPawnFor(Controller NewPlayer, NavigationPoint StartSpot)
 {
@@ -18,13 +19,13 @@ function Pawn SpawnDefaultPawnFor(Controller NewPlayer, NavigationPoint StartSpo
 
 event AddDefaultInventory(Pawn P)
 {
-    local MeleeWeaponInventoryManager MWInventoryManager;
+    local AzurukInventoryManager MWInventoryManager;
 
     super.AddDefaultInventory(P);
 
     if (SwordArchetype != None)
     {
-        MWInventoryManager = MeleeWeaponInventoryManager(P.InvManager);
+        MWInventoryManager = AzurukInventoryManager(P.InvManager);
 
         if (MWInventoryManager != None)
         {
@@ -35,8 +36,8 @@ event AddDefaultInventory(Pawn P)
 
 DefaultProperties
 {
-	SwordArchetype=MeleeWeaponSword'AzurukContent.Archetypes.AzurukSword'
-	PawnArchetype=AzurukPawn'AzurukContent.Archetypes.AzurukPawn'
+	SwordArchetype=AzurukWeaponSword'AzurukContent.Archetypes.AzurukSword'
+	PawnArchetype=PlayerPawn'AzurukContent.Archetypes.PlayerPawn'
 	PlayerControllerClass=class'AzurukGame.AzurukPlayerController'
 }
 

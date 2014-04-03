@@ -1,19 +1,21 @@
 class AzurukWeaponSword extends Weapon;
 
+// Constants
 var() const name SwordHiltSocketName;
 var() const name SwordTipSocketName;
 
+// Vars
 var array<Actor> SwingHitActors;
 var array<int> Swings;
 var const int MaxSwings;
 
 reliable client function ClientGivenTo(Pawn NewOwner, bool bDoNotActivate)
 {
-    local MeleeWeaponPawn MWPawn;
+    local PlayerPawn MWPawn;
 
     super.ClientGivenTo(NewOwner, bDoNotActivate);
 
-    MWPawn = MeleeWeaponPawn(NewOwner);
+    MWPawn = PlayerPawn(NewOwner);
 
     if (MWPawn != none && MWPawn.Mesh.GetSocketByName(MWPawn.SwordHandSocketName) != none)
     {
@@ -21,46 +23,6 @@ reliable client function ClientGivenTo(Pawn NewOwner, bool bDoNotActivate)
         Mesh.SetLightEnvironment(MWPawn.LightEnvironment);
         MWPawn.Mesh.AttachComponentToSocket(Mesh, MWPawn.SwordHandSocketName);
    }
-}
-
-DefaultProperties
-{
-	MaxSwings=2
-	Swings(0)=2
-
-	bMeleeWeapon=true;
-	bInstantHit=true;
-	bCanThrow=false;
-
-	FiringStatesArray(0)="Swinging"
-
-	WeaponFireTypes(0)=EWFT_Custom
-
-    Begin Object Class=SkeletalMeshComponent Name=SwordSkeletalMeshComponent
-       bCacheAnimSequenceNodes=false
-       AlwaysLoadOnClient=true
-       AlwaysLoadOnServer=true
-       CastShadow=true
-       BlockRigidBody=true
-       bUpdateSkelWhenNotRendered=false
-       bIgnoreControllersWhenNotRendered=true
-       bUpdateKinematicBonesFromAnimation=true
-       bCastDynamicShadow=true
-       RBChannel=RBCC_Untitled3
-       RBCollideWithChannels=(Untitled3=true)
-       bOverrideAttachmentOwnerVisibility=true
-       bAcceptsDynamicDecals=false
-       bHasPhysicsAssetInstance=true
-       TickGroup=TG_PreAsyncWork
-       MinDistFactorForKinematicUpdate=0.2f
-       bChartDistanceFactor=true
-       RBDominanceGroup=20
-       Scale=1.f
-       bAllowAmbientOcclusion=false
-       bUseOnePassLightingOnTranslucency=true
-       bPerBoneMotionBlur=true
-    End Object
-    Mesh=SwordSkeletalMeshComponent
 }
 
 function RestoreAmmo(int Amount, optional byte FireModeNum)
@@ -90,11 +52,11 @@ simulated function FireAmmunition()
    {
 		if (MaxSwings - Swings[0] == 0)
 			{
-				MeleeWeaponPawn(Owner).SwingAnim.PlayCustomAnim('SwingOne', 1.0);
+				PlayerPawn(Owner).SwingAnim.PlayCustomAnim('SwingOne', 1.0);
 			}
 			else
 			{
-				MeleeWeaponPawn(Owner).SwingAnim.PlayCustomAnim('SwingTwo', 1.0);
+				PlayerPawn(Owner).SwingAnim.PlayCustomAnim('SwingTwo', 1.0);
 			}
 		super.FireAmmunition();
    }
@@ -139,11 +101,11 @@ function Vector GetSwordSocketLocation(Name SocketName)
 function bool AddToSwingHitActors(Actor HitActor)
 {
    local int i;
-   local MeleeWeaponPawn hitPawn;
+   local PlayerPawn hitPawn;
 
-   if (MeleeWeaponPawn(HitActor) != none)
+   if (PlayerPawn(HitActor) != none)
    {
-      hitPawn = MeleeWeaponPawn(HitActor);
+      hitPawn = PlayerPawn(HitActor);
 
 	  if(hitPawn.isBlocking())
 	     return false;
@@ -179,4 +141,44 @@ function TraceSwing()
          HitActor.TakeDamage(DamageAmount, Instigator.Controller, HitLoc, Momentum, class'DamageType');
       }
    }
+}
+
+DefaultProperties
+{
+	MaxSwings=2
+	Swings(0)=2
+
+	bMeleeWeapon=true;
+	bInstantHit=true;
+	bCanThrow=false;
+
+	FiringStatesArray(0)="Swinging"
+
+	WeaponFireTypes(0)=EWFT_Custom
+
+    Begin Object Class=SkeletalMeshComponent Name=SwordSkeletalMeshComponent
+       bCacheAnimSequenceNodes=false
+       AlwaysLoadOnClient=true
+       AlwaysLoadOnServer=true
+       CastShadow=true
+       BlockRigidBody=true
+       bUpdateSkelWhenNotRendered=false
+       bIgnoreControllersWhenNotRendered=true
+       bUpdateKinematicBonesFromAnimation=true
+       bCastDynamicShadow=true
+       RBChannel=RBCC_Untitled3
+       RBCollideWithChannels=(Untitled3=true)
+       bOverrideAttachmentOwnerVisibility=true
+       bAcceptsDynamicDecals=false
+       bHasPhysicsAssetInstance=true
+       TickGroup=TG_PreAsyncWork
+       MinDistFactorForKinematicUpdate=0.2f
+       bChartDistanceFactor=true
+       RBDominanceGroup=20
+       Scale=1.f
+       bAllowAmbientOcclusion=false
+       bUseOnePassLightingOnTranslucency=true
+       bPerBoneMotionBlur=true
+    End Object
+    Mesh=SwordSkeletalMeshComponent
 }

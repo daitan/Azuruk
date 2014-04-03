@@ -1,4 +1,4 @@
-class WalkingAIPawn extends UDKPawn
+class WalkingAIPawn extends AzurukPawn
 	placeable;
 
 DefaultProperties
