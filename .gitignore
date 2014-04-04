@@ -27,6 +27,7 @@ Development/Src/GFxUIEditor
 Development/Src/GameFramework
 Development/Src/IpDrv
 Development/Src/MyMod
+Development/Src/obj
 Development/Src/OnlineSubsystemGameCenter
 Development/Src/OnlineSubsystemPC
 Development/Src/OnlineSubsystemSteamworks
@@ -45,6 +46,12 @@ Engine/
 # Note that this assumes you are creating a new folder for holding your content
 # and you do NOT want to store the existing demo content
 # If you uncomment one of these, your repo might get very large
+UDKGame/Config/IPhone/
+UDKGame/Config/Mac/
+UDKGame/Config/Mobile/
+UDKGame/Config/UnrealFrontend.DefaultProfiles/
+UDKGame/Config/*.ini
+
 UDKGame/Content/Maps/
 UDKGame/Content/Mobile/
 UDKGame/Content/Shared/
