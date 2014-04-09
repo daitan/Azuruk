@@ -138,6 +138,8 @@ defaultproperties
 
 	InventoryManagerClass=class'AzurukGame.AzurukInventoryManager'
 
+	SwordHandSocketName="WeaponPoint"
+
 	Components.Remove(Sprite)
 
 	Begin Object Name=CollisionCylinder
@@ -161,7 +163,7 @@ defaultproperties
     LightEnvironment=MyLightEnvironment
 
 	Begin Object Class=SkeletalMeshComponent Name=MySkeletalMeshComponent
-		SkeletalMesh=SkeletalMesh'UTExampleCrowd.Mesh.SK_Crowd_Robot'
+		SkeletalMesh=SkeletalMesh'AzurukContent.SkeletalMesh.SK_Crowd_Robot'
         bCacheAnimSequenceNodes=false
         AlwaysLoadOnClient=true
         AlwaysLoadOnServer=true

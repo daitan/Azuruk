@@ -4,6 +4,7 @@ class WalkingAIPawn extends AzurukPawn
 DefaultProperties
 { 
     Begin Object Class=SkeletalMeshComponent Name=PawnSkeletalMesh
+		SkeletalMesh=SkeletalMesh'AzurukContent.SkeletalMesh.SK_Crowd_Robot'
     End Object
     Mesh=PawnSkeletalMesh
     Components.Add(PawnSkeletalMesh)
