@@ -81,6 +81,12 @@
     <Folder Include="UDKBase\classes\" />
     <Folder Include="UnrealEd\" />
     <Folder Include="UnrealEd\Classes\" />
+    <Folder Include="UTEditor\" />
+    <Folder Include="UTEditor\Classes\" />
+    <Folder Include="UTGameContent\" />
+    <Folder Include="UTGameContent\Classes\" />
+    <Folder Include="UTGame\" />
+    <Folder Include="UTGame\Classes\" />
     <Folder Include="WinDrv\" />
     <Folder Include="WinDrv\Classes\" />
   </ItemGroup>

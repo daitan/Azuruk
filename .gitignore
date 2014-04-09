@@ -2,6 +2,7 @@
 *.swp
 *.bin
 *.checkpoint
+*.journal
 *ShaderCache*
 *PCTOC*
 *.log
@@ -51,6 +52,10 @@ UDKGame/Config/Mac/
 UDKGame/Config/Mobile/
 UDKGame/Config/UnrealFrontend.DefaultProfiles/
 UDKGame/Config/*.ini
+UDKGame/Config/*.txt
+!UDKGame/Config/Engine.ini
+!UDKGame/Config/Input.ini
+!UDKGame/Config/Game.ini
 
 UDKGame/Content/Maps/
 UDKGame/Content/Mobile/

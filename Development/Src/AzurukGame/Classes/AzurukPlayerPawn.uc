@@ -19,7 +19,8 @@ var int currentSet;
 var int i;
 var int MorphEnergyMax[4];
 var int MorphEnergyCurrent[4];
-var int MorphEnergyDrainRate[4];
+var float MorphEnergyDrainRate[4];
+var float MorphEnergyRechargeRate[4];
 var bool blockingState;
 
 /*
@@ -38,6 +39,11 @@ exec function GBA_Transform()
 {
 	SetTimer(0.1f, true, 'DrainMorphEnergyFormOne');
 	Mesh.SetSkeletalMesh(morphSets[0].pawnMesh);
+}
+
+exec function GBA_DefaultFormTransform()
+{
+	Mesh.SetSkeletalMesh(defaultFeatures.pawnMesh);
 }
 
 exec function GBA_getMorph()
@@ -65,15 +71,43 @@ simulated function DrainMorphEnergyFormOne()
 		MorphEnergyCurrent[0] -= MorphEnergyDrainRate[0];
 	}
 
-	if (MorphEnergyCurrent[0] <= 0)
+	if (MorphEnergyCurrent[0] < 0) {
+		MorphEnergyCurrent[0] = 0;
+	}
+
+	if (MorphEnergyCurrent[0] == 0)
 	{
 		StopMorphFormOne();
 	}
 }
 
+simulated function RechargeMorphEnergyFormOne()
+{
+	if (MorphEnergyCurrent[0] < MorphEnergyMax[0])
+	{
+		MorphEnergyCurrent[0] += MorphEnergyRechargeRate[0];
+	}
+
+	if (MorphEnergyCurrent[0] > MorphEnergyMax[0]) {
+		MorphEnergyCurrent[0] = MorphEnergyMax[0];
+	}
+
+	if (MorphEnergyCurrent[0] == MorphEnergyMax[0])
+	{
+		StopRechargeFormOne();
+	}
+}
+
+exec function StopRechargeFormOne()
+{
+	ClearTimer('RechargeMorphEnergyFormOne');
+}
+
 exec function StopMorphFormOne()
 {
+	GBA_DefaultFormTransform();
 	ClearTimer('DrainMorphEnergyFormOne');
+	SetTimer(0.1f, true, 'RechargeMorphEnergyFormOne');
 }
 
 /*
@@ -135,6 +169,10 @@ defaultproperties
 	MorphEnergyDrainRate[1]=1.f
 	MorphEnergyDrainRate[2]=1.f
 	MorphEnergyDrainRate[3]=1.f
+	MorphEnergyRechargeRate[0]=2.f
+	MorphEnergyRechargeRate[1]=2.f
+	MorphEnergyRechargeRate[2]=2.f
+	MorphEnergyRechargeRate[3]=2.f
 
 	InventoryManagerClass=class'AzurukGame.AzurukInventoryManager'
 
