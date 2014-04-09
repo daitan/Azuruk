@@ -1,7 +1,7 @@
-class AzurukHUD extends UDKHUD
+class AzurukHUD extends HUD
 	config(AzurukHUD);
 
-var PlayerPawn PPawn;
+var AzurukPlayerPawn PPawn;
 
 simulated event postrender()
 	{
@@ -12,7 +12,7 @@ simulated event postrender()
 
 function DrawGameHUD()
 {
-	PPawn = PlayerPawn(PlayerOwner.Pawn);
+	PPawn = AzurukPlayerPawn(PlayerOwner.Pawn);
 
     if (!PlayerOwner.IsDead())
     {

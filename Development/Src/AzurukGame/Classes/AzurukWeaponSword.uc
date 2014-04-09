@@ -11,11 +11,11 @@ var const int MaxSwings;
 
 reliable client function ClientGivenTo(Pawn NewOwner, bool bDoNotActivate)
 {
-    local PlayerPawn PPawn;
+    local AzurukPlayerPawn PPawn;
 
     super.ClientGivenTo(NewOwner, bDoNotActivate);
 
-    PPawn = PlayerPawn(NewOwner);
+    PPawn = AzurukPlayerPawn(NewOwner);
 
     if (PPawn != none && PPawn.Mesh.GetSocketByName(PPawn.SwordHandSocketName) != none)
     {
@@ -52,11 +52,11 @@ simulated function FireAmmunition()
    {
 		if (MaxSwings - Swings[0] == 0)
 			{
-				PlayerPawn(Owner).SwingAnim.PlayCustomAnim('SwingOne', 1.0);
+				//AzurukPlayerPawn(Owner).SwingAnim.PlayCustomAnim('SwingOne', 1.0);
 			}
 			else
 			{
-				PlayerPawn(Owner).SwingAnim.PlayCustomAnim('SwingTwo', 1.0);
+				//AzurukPlayerPawn(Owner).SwingAnim.PlayCustomAnim('SwingTwo', 1.0);
 			}
 		super.FireAmmunition();
    }
@@ -101,11 +101,11 @@ function Vector GetSwordSocketLocation(Name SocketName)
 function bool AddToSwingHitActors(Actor HitActor)
 {
    local int i;
-   local PlayerPawn hitPawn;
+   local AzurukPlayerPawn hitPawn;
 
-   if (PlayerPawn(HitActor) != none)
+   if (AzurukPlayerPawn(HitActor) != none)
    {
-      hitPawn = PlayerPawn(HitActor);
+      hitPawn = AzurukPlayerPawn(HitActor);
 
 	  if(hitPawn.isBlocking())
 	     return false;

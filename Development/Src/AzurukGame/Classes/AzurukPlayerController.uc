@@ -1,7 +1,12 @@
-class AzurukPlayerController extends UDKPlayerController
+/**
+ * Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
+ */
+class AzurukPlayerController extends GamePlayerController
 	config(Game);
 
-// Zoom Execute Functions
+/*
+ * Camera Zoom Execute Functions
+ */
 exec function GBA_ZoomIn()
 {
 	AzurukCamera(PlayerCamera).ZoomIn();
@@ -12,12 +17,7 @@ exec function GBA_ZoomOut()
 	AzurukCamera(PlayerCamera).ZoomOut();
 }
 
-/* SpawnDefaultHUD()
-Spawn a HUD (make sure that PlayerController always has valid HUD, even if \
-ClientSetHUD() hasn't been called\
-*/
-
-DefaultProperties
+defaultproperties
 {
 	CameraClass=class'AzurukGame.AzurukCamera'
 }

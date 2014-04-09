@@ -5,17 +5,16 @@
     <Platform Condition=" '$(Platform)' == '' ">Win32</Platform>
     <ProductVersion>1.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9FAD7169-C2C3-4BBB-BA53-8E1821BE3ACB}</ProjectGuid>
+    <ProjectGuid>{544C489B-4AC2-468F-9367-DCB28DDF4147}</ProjectGuid>
     <OutputType>UserMod</OutputType>
     <ProjectType>UnrealScript</ProjectType>
     <RootNamespace>AzurukGame</RootNamespace>
     <AssemblyName>AzurukGame</AssemblyName>
     <Name>AzurukGame</Name>
     <TargetGame>UnrealEngine 3 Licensee</TargetGame>
-    <BaseContentPath>..\..\..\UDK-2014-02\Engine\Content</BaseContentPath>
-    <GameContentPath>..\..\..\UDK-2014-02\UDKGame\Content</GameContentPath>
+    <BaseContentPath>..\..\Engine\Content</BaseContentPath>
+    <GameContentPath>..\..\UDKGame\Content</GameContentPath>
     <PackageExtensions>.upk;.udk</PackageExtensions>
-    <UccPath>..\..\..\UDK-2014-02\Binaries\Win32\UDK.exe</UccPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -82,12 +81,6 @@
     <Folder Include="UDKBase\classes\" />
     <Folder Include="UnrealEd\" />
     <Folder Include="UnrealEd\Classes\" />
-    <Folder Include="UTEditor\" />
-    <Folder Include="UTEditor\Classes\" />
-    <Folder Include="UTGameContent\" />
-    <Folder Include="UTGameContent\Classes\" />
-    <Folder Include="UTGame\" />
-    <Folder Include="UTGame\Classes\" />
     <Folder Include="WinDrv\" />
     <Folder Include="WinDrv\Classes\" />
   </ItemGroup>

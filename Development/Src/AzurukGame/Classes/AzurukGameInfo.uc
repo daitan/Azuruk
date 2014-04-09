@@ -1,21 +1,14 @@
-class AzurukGameInfo extends UDKGame
-	config(AzurukGameInfo);
+/**
+ * Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
+ */
+class AzurukGameInfo extends GameInfo;
 
-var() archetype AzurukPawn PawnArchetype;
 var() archetype AzurukWeaponSword SwordArchetype;
 
-function Pawn SpawnDefaultPawnFor(Controller NewPlayer, NavigationPoint StartSpot)
+auto State PendingMatch
 {
-    local Pawn SpawnedPawn;
-
-    if (NewPlayer == none || StartSpot == none)
-    {
-        return none;
-    }
-
-    SpawnedPawn = Spawn(PawnArchetype.Class,,, StartSpot.Location,, PawnArchetype);
-
-    return SpawnedPawn;
+Begin:
+	StartMatch();
 }
 
 event AddDefaultInventory(Pawn P)
@@ -35,11 +28,13 @@ event AddDefaultInventory(Pawn P)
     }
 }
 
-DefaultProperties
+defaultproperties
 {
-	HUDType=class'AzurukGame.AzurukHUD'
 	SwordArchetype=AzurukWeaponSword'AzurukContent.Archetypes.AzurukWeaponSword'
-	PawnArchetype=PlayerPawn'AzurukContent.Archetypes.PlayerPawn'
+	HUDType=class'AzurukGame.AzurukHUD'
 	PlayerControllerClass=class'AzurukGame.AzurukPlayerController'
+	DefaultPawnClass=class'AzurukGame.AzurukPlayerPawn'
+	bDelayedStart=false
 }
+
 

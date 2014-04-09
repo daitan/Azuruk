@@ -1,4 +1,4 @@
-class AzurukPawn extends UDKPawn;
+class AzurukPawn extends GamePawn;
 
 Struct PawnFeatures
 {

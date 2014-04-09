@@ -6,7 +6,7 @@
     <ReferenceSourcePath />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <StartProgram>..\..\..\UDK-2014-02\Binaries\Win32\UDK.exe</StartProgram>
+    <StartProgram>..\..\Binaries\Win32\UDK.exe</StartProgram>
     <CmdArgs>-log</CmdArgs>
     <LoadMapAtStartup>False</LoadMapAtStartup>
     <StartupMap />
@@ -17,7 +17,7 @@
     <UseUnpublished>False</UseUnpublished>
     <ForceWindowedMode>True</ForceWindowedMode>
     <WindowWidth>1024</WindowWidth>
-    <WindowHeight>720</WindowHeight>
+    <WindowHeight>768</WindowHeight>
     <ShowLogWindow>False</ShowLogWindow>
     <LogWindowX>0</LogWindowX>
     <LogWindowY>0</LogWindowY>

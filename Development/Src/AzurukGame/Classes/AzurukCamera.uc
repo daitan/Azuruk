@@ -87,7 +87,6 @@ function UpdateViewTarget(out TViewTarget OutVT, float DeltaTime)
 		// Apply camera modifiers at the end (view shakes for example)
 		ApplyCameraModifiers(DeltaTime, OutVT.POV);
 	}
-	//`log( WorldInfo.TimeSeconds  @ GetFuncName() @ OutVT.Target @ OutVT.POV.Location @ OutVT.POV.Rotation @ OutVT.POV.FOV );
 }
 
 function ZoomIn()
