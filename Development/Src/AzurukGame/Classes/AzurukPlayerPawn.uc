@@ -2,7 +2,7 @@
  * Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
  */
 class AzurukPlayerPawn extends AzurukPawn
-	config(Game);
+	config(Game) placeable;;
 
 /*
  * Constants
@@ -13,15 +13,22 @@ var() const Name SwordHandSocketName;
 /*
  * Variables
  */
-var PawnFeatures morphSets[4];
+var PawnFeatures morphSets[4], currentFeatures;
 var Pawn interactingPawn;
-var int currentSet;
-var int i;
-var int MorphEnergyMax[4];
-var int MorphEnergyCurrent[4];
-var float MorphEnergyDrainRate[4];
-var float MorphEnergyRechargeRate[4];
+var int MorphEnergyMax, MorphEnergyCurrent[4];
+var float MorphEnergyDrainRate, MorphEnergyRechargeRate;
+
 var bool blockingState;
+
+/*
+ * AzurukPlayerPawn Initializations
+ */
+function PostBeginPlay()
+{
+	super.PostBeginPlay();
+	
+	currentFeatures = defaultFeatures;
+}
 
 /*
  * Camera Related Functions
@@ -37,8 +44,31 @@ simulated function name GetDefaultCameraMode( PlayerController RequestedBy )
  */
 exec function GBA_Transform()
 {
-	SetTimer(0.1f, true, 'DrainMorphEnergyFormOne');
-	Mesh.SetSkeletalMesh(morphSets[0].pawnMesh);
+	SetMorphSet(0);
+}
+
+function SetMorphSet(int index)
+{
+	if (morphSets[index].pawnMesh == none && MorphEnergyCurrent[index] != 0)
+	{
+		`log("Can't Morph");
+	}
+	else if (morphSets[index] != currentFeatures)
+	{
+		currentFeatures = morphSets[index];
+		Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
+		Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
+		Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
+		SetTimer(0.1f, true, 'DrainMorphEnergyFormOne');
+	}
+	else 
+	{
+		currentFeatures = defaultFeatures;
+		Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
+		Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
+		Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
+		StopMorphFormOne();
+	}
 }
 
 exec function GBA_DefaultFormTransform()
@@ -59,16 +89,16 @@ simulated function int GetMorphEnergyCurrent(int morph)
 	return MorphEnergyCurrent[morph];
 }
 
-simulated function int GetMorphEnergyMax(int morph)
+simulated function int GetMorphEnergyMax()
 {
-	return MorphEnergyMax[morph];
+	return MorphEnergyMax;
 }
 
 simulated function DrainMorphEnergyFormOne()
 {
 	if (MorphEnergyCurrent[0] > 0)
 	{
-		MorphEnergyCurrent[0] -= MorphEnergyDrainRate[0];
+		MorphEnergyCurrent[0] -= MorphEnergyDrainRate;
 	}
 
 	if (MorphEnergyCurrent[0] < 0) {
@@ -83,16 +113,16 @@ simulated function DrainMorphEnergyFormOne()
 
 simulated function RechargeMorphEnergyFormOne()
 {
-	if (MorphEnergyCurrent[0] < MorphEnergyMax[0])
+	if (MorphEnergyCurrent[0] < MorphEnergyMax)
 	{
-		MorphEnergyCurrent[0] += MorphEnergyRechargeRate[0];
+		MorphEnergyCurrent[0] += MorphEnergyRechargeRate;
 	}
 
-	if (MorphEnergyCurrent[0] > MorphEnergyMax[0]) {
-		MorphEnergyCurrent[0] = MorphEnergyMax[0];
+	if (MorphEnergyCurrent[0] > MorphEnergyMax) {
+		MorphEnergyCurrent[0] = MorphEnergyMax;
 	}
 
-	if (MorphEnergyCurrent[0] == MorphEnergyMax[0])
+	if (MorphEnergyCurrent[0] == MorphEnergyMax)
 	{
 		StopRechargeFormOne();
 	}
@@ -157,23 +187,15 @@ simulated function StopFire(byte FireModeNum)
 
 defaultproperties
 {
-	MorphEnergyMax[0]=100
-	MorphEnergyMax[1]=100
-	MorphEnergyMax[2]=100
-	MorphEnergyMax[3]=100
+	MorphEnergyMax=100
+	MorphEnergyDrainRate=1.f
+	MorphEnergyRechargeRate=2.f
+
 	MorphEnergyCurrent[0]=100
 	MorphEnergyCurrent[1]=100
 	MorphEnergyCurrent[2]=100
 	MorphEnergyCurrent[3]=100
-	MorphEnergyDrainRate[0]=1.f
-	MorphEnergyDrainRate[1]=1.f
-	MorphEnergyDrainRate[2]=1.f
-	MorphEnergyDrainRate[3]=1.f
-	MorphEnergyRechargeRate[0]=2.f
-	MorphEnergyRechargeRate[1]=2.f
-	MorphEnergyRechargeRate[2]=2.f
-	MorphEnergyRechargeRate[3]=2.f
-
+	
 	InventoryManagerClass=class'AzurukGame.AzurukInventoryManager'
 
 	SwordHandSocketName="WeaponPoint"
@@ -200,32 +222,17 @@ defaultproperties
     Components.Add(MyLightEnvironment)
     LightEnvironment=MyLightEnvironment
 
+	bCollideActors = true
+    CollisionType = Collide_BlockAll
+
 	Begin Object Class=SkeletalMeshComponent Name=MySkeletalMeshComponent
-		SkeletalMesh=SkeletalMesh'AzurukContent.SkeletalMesh.SK_Crowd_Robot'
-        bCacheAnimSequenceNodes=false
-        AlwaysLoadOnClient=true
-        AlwaysLoadOnServer=true
-        CastShadow=true
-        BlockRigidBody=true
-        bUpdateSkelWhenNotRendered=false
-        bIgnoreControllersWhenNotRendered=true
-        bUpdateKinematicBonesFromAnimation=true
-        bCastDynamicShadow=true
-        RBChannel=RBCC_Untitled3
-        RBCollideWithChannels=(Untitled3=true)
+		SkeletalMesh=SkeletalMesh'AzurukContent.SkeletalMeshes.SK_Crowd_Robot'
         LightEnvironment=MyLightEnvironment
-        bOverrideAttachmentOwnerVisibility=true
-        bAcceptsDynamicDecals=false
-        bHasPhysicsAssetInstance=true
-        TickGroup=TG_PreAsyncWork
-        MinDistFactorForKinematicUpdate=0.2f
-        bChartDistanceFactor=true
-        RBDominanceGroup=20
-        Scale=1.f
-        bAllowAmbientOcclusion=false
-        bUseOnePassLightingOnTranslucency=true
-        bPerBoneMotionBlur=true
+        BlockNonZeroExtent = True
+        BlockZeroExtent = True
+        BlockActors = True
+        CollideActors =True
     End Object
-    Mesh=MySkeletalMeshComponent
+	Mesh=MySkeletalMeshComponent
     Components.Add(MySkeletalMeshComponent)
 }

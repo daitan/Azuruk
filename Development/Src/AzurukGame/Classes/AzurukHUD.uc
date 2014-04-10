@@ -17,7 +17,7 @@ function DrawGameHUD()
     if (!PlayerOwner.IsDead())
     {
         DrawBar("Health",PlayerOwner.Pawn.Health, PlayerOwner.Pawn.HealthMax,20,20,200,80,80); 
-		DrawBar("Morph Energy",PPawn.GetMorphEnergyCurrent(0),PPawn.GetMorphEnergyMax(0),20,40,80,80,255); 
+		DrawBar("Morph Energy",PPawn.GetMorphEnergyCurrent(0),PPawn.GetMorphEnergyMax(),20,40,80,80,255); 
     }
 
 }
