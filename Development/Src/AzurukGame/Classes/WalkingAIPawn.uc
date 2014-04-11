@@ -17,8 +17,8 @@ DefaultProperties
 
     Begin Object Class=SkeletalMeshComponent Name=PawnSkeletalMesh
 		SkeletalMesh=SkeletalMesh'Creatures_Frank.SkeletalMeshes.frank'
-		AnimSets[0]=AnimSet'AzurukContent.AnimSets.FrankAnims'
-		AnimTreeTemplate=AnimTree'AzurukContent.AnimTrees.FrankAnimTree'
+		AnimSets[0]=AnimSet'Creatures_Frank.AnimSet.FrankAnims'
+		AnimTreeTemplate=AnimTree'Creatures_Frank.AnimTree.FrankAnimTree'
     End Object
     Mesh=PawnSkeletalMesh
     Components.Add(PawnSkeletalMesh)
