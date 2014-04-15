@@ -42,9 +42,10 @@ simulated function name GetDefaultCameraMode( PlayerController RequestedBy )
  * Mesh, AnimSet and AnimTree Changes
  * Related to Morphing Mechanic
  */
-exec function GBA_Transform()
+
+exec function GBA_DefaultFormTransform()
 {
-	SetMorphSet(0);
+	Mesh.SetSkeletalMesh(defaultFeatures.pawnMesh);
 }
 
 function SetMorphSet(int index)
@@ -68,19 +69,6 @@ function SetMorphSet(int index)
 		Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
 		Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
 		StopMorphFormOne();
-	}
-}
-
-exec function GBA_DefaultFormTransform()
-{
-	Mesh.SetSkeletalMesh(defaultFeatures.pawnMesh);
-}
-
-exec function GBA_getMorph()
-{
-	if (interactingPawn != none)
-	{
-		morphSets[0] = returnPawnFeatures(interactingPawn);
 	}
 }
 
