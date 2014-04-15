@@ -1,8 +1,7 @@
 /**
  * Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
  */
-class AzurukPlayerPawn extends AzurukPawn
-	config(Game) placeable;;
+class AzurukPlayerPawn extends AzurukPawn;
 
 /*
  * Constants
