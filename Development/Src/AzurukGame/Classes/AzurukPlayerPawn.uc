@@ -14,8 +14,9 @@ var() const Name SwordHandSocketName;
  */
 var PawnFeatures morphSets[4], currentFeatures;
 var Pawn interactingPawn;
-var int MorphEnergyMax, MorphEnergyCurrent[4];
-var float MorphEnergyDrainRate, MorphEnergyRechargeRate;
+var int MorphCurrentForm;
+var float MorphEnergyDrainRate, MorphEnergyRechargeRate, UpdateRate,
+		  MorphEnergyMax, MorphEnergyCurrent[4], MorphEnergyRechargeDelay;
 
 var bool blockingState;
 
@@ -44,7 +45,11 @@ simulated function name GetDefaultCameraMode( PlayerController RequestedBy )
 
 exec function GBA_DefaultFormTransform()
 {
-	Mesh.SetSkeletalMesh(defaultFeatures.pawnMesh);
+	MorphCurrentForm = 0;
+	currentFeatures = defaultFeatures;
+	Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
+	Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
+	Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
 }
 
 function SetMorphSet(int index)
@@ -55,50 +60,63 @@ function SetMorphSet(int index)
 	}
 	else if (morphSets[index] != currentFeatures)
 	{
+		MorphCurrentForm = index + 1;
 		currentFeatures = morphSets[index];
 		Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
 		Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
 		Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
-		SetTimer(0.1f, true, 'DrainMorphEnergyFormOne');
+		if (MorphCurrentForm == 1) {
+			StopRechargeFormOne();
+			SetTimer(UpdateRate, true, 'DrainMorphEnergyFormOne');
+		} else if (MorphCurrentForm == 2) {
+			StopRechargeFormTwo();
+			SetTimer(UpdateRate, true, 'DrainMorphEnergyFormTwo');
+		}
 	}
 	else 
 	{
-		currentFeatures = defaultFeatures;
-		Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
-		Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
-		Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
-		StopMorphFormOne();
+		if (MorphCurrentForm == 1) {
+			StopMorphFormOne();
+		} else if (MorphCurrentForm == 2) {
+			StopMorphFormTwo();
+		}
+		GBA_DefaultFormTransform();
 	}
 }
 
-simulated function int GetMorphEnergyCurrent(int morph)
+function int GetMorphCurrentForm()
+{
+	return MorphCurrentForm;
+}
+
+function float GetMorphEnergyCurrent(int morph)
 {
 	return MorphEnergyCurrent[morph];
 }
 
-simulated function int GetMorphEnergyMax()
+function float GetMorphEnergyMax()
 {
 	return MorphEnergyMax;
 }
 
-simulated function DrainMorphEnergyFormOne()
+function DrainMorphEnergyFormOne()
 {
-	if (MorphEnergyCurrent[0] > 0)
+	if (MorphEnergyCurrent[0] > 0.0)
 	{
 		MorphEnergyCurrent[0] -= MorphEnergyDrainRate;
 	}
 
-	if (MorphEnergyCurrent[0] < 0) {
-		MorphEnergyCurrent[0] = 0;
+	if (MorphEnergyCurrent[0] < 0.0) {
+		MorphEnergyCurrent[0] = 0.0;
 	}
 
-	if (MorphEnergyCurrent[0] == 0)
+	if (MorphEnergyCurrent[0] == 0.0)
 	{
 		StopMorphFormOne();
 	}
 }
 
-simulated function RechargeMorphEnergyFormOne()
+function RechargeMorphEnergyFormOne()
 {
 	if (MorphEnergyCurrent[0] < MorphEnergyMax)
 	{
@@ -115,16 +133,85 @@ simulated function RechargeMorphEnergyFormOne()
 	}
 }
 
-exec function StopRechargeFormOne()
+function StopRechargeFormOne()
 {
 	ClearTimer('RechargeMorphEnergyFormOne');
+	ClearTimer('StartRechargeFormOne');
 }
 
-exec function StopMorphFormOne()
+function StopDrainFormOne()
+{
+	
+	ClearTimer('DrainMorphEnergyFormOne');
+}
+
+function StartRechargeFormOne()
+{
+	SetTimer(UpdateRate, true, 'RechargeMorphEnergyFormOne');
+}
+
+function StopMorphFormOne()
 {
 	GBA_DefaultFormTransform();
-	ClearTimer('DrainMorphEnergyFormOne');
-	SetTimer(0.1f, true, 'RechargeMorphEnergyFormOne');
+	StopDrainFormOne();
+	SetTimer(MorphEnergyRechargeDelay, false, 'StartRechargeFormOne');
+}
+
+function DrainMorphEnergyFormTwo()
+{
+	if (MorphEnergyCurrent[1] > 0.0)
+	{
+		MorphEnergyCurrent[1] -= MorphEnergyDrainRate;
+	}
+
+	if (MorphEnergyCurrent[1] < 0.0) {
+		MorphEnergyCurrent[1] = 0.0;
+	}
+
+	if (MorphEnergyCurrent[1] == 0.0)
+	{
+		StopMorphFormOne();
+	}
+}
+
+function RechargeMorphEnergyFormTwo()
+{
+	if (MorphEnergyCurrent[1] < MorphEnergyMax)
+	{
+		MorphEnergyCurrent[1] += MorphEnergyRechargeRate;
+	}
+
+	if (MorphEnergyCurrent[1] > MorphEnergyMax) {
+		MorphEnergyCurrent[1] = MorphEnergyMax;
+	}
+
+	if (MorphEnergyCurrent[1] == MorphEnergyMax)
+	{
+		StopRechargeFormOne();
+	}
+}
+
+function StopRechargeFormTwo()
+{
+	ClearTimer('RechargeMorphEnergyFormTwo');
+	ClearTimer('StartRechargeFormTwo');
+}
+
+function StopDrainFormTwo()
+{
+	ClearTimer('DrainMorphEnergyFormTwo');
+}
+
+function StartRechargeFormTwo()
+{
+	SetTimer(UpdateRate, true, 'RechargeMorphEnergyFormOne');
+}
+
+function StopMorphFormTwo()
+{
+	GBA_DefaultFormTransform();
+	StopDrainFormTwo();
+	SetTimer(MorphEnergyRechargeDelay, false, 'StartRechargeFormTwo');
 }
 
 /*
@@ -174,14 +261,19 @@ simulated function StopFire(byte FireModeNum)
 
 defaultproperties
 {
-	MorphEnergyMax=100
-	MorphEnergyDrainRate=1.f
-	MorphEnergyRechargeRate=2.f
+	MorphCurrentForm = 0;
 
-	MorphEnergyCurrent[0]=100
-	MorphEnergyCurrent[1]=100
-	MorphEnergyCurrent[2]=100
-	MorphEnergyCurrent[3]=100
+	MorphEnergyMax=100.0
+	MorphEnergyDrainRate=0.1
+	MorphEnergyRechargeRate=0.2
+	MorphEnergyRechargeDelay=1.0
+
+	MorphEnergyCurrent[0]=100.0
+	MorphEnergyCurrent[1]=100.0
+	MorphEnergyCurrent[2]=100.0
+	MorphEnergyCurrent[3]=100.0
+
+	UpdateRate=0.01
 	
 	InventoryManagerClass=class'AzurukGame.AzurukInventoryManager'
 
