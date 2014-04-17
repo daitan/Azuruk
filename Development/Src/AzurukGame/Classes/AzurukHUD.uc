@@ -64,8 +64,8 @@ function DrawCustomText(String Text, int X, int Y, int R, int G, int B, int A)
 	Canvas.DrawText(Text);
 }
 
-function String GetCurrentFormToString(AzurukPlayerPawn PPawn) {
-	currentForm = PPawn.GetMorphCurrentForm();
+function String GetCurrentFormToString(AzurukPlayerPawn p) {
+	currentForm = p.GetMorphCurrentForm();
 	switch (currentForm)
 	{
 		case 0:
