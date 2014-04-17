@@ -4,10 +4,9 @@ class FrankAIPawn extends AzurukPawn
 function AddDefaultInventory()
 {
 	InvManager.CreateInventory(class'AzurukGame.FrankDefaultAttack');
-	`log(self.Weapon.Class);
 }
 
-event PostPeginPlay()
+event PostBeginPlay()
 {
 	super.PostBeginPlay();
 	AddDefaultInventory();
@@ -15,6 +14,8 @@ event PostPeginPlay()
 
 DefaultProperties
 {
+	RotationRate=(Pitch=20000,Yaw=60000,Roll=20000)
+
 	Begin Object Name=CollisionCylinder
 		CollisionRadius=+30.000000
 		CollisionHeight=+50.000000

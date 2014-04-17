@@ -19,7 +19,7 @@ auto state Idle
 {
 	event SeePlayer(Pawn P)
 	{
-		PPawn = P;
+		PPawn = GetALocalPlayerController().Pawn;
 		GotoState('Flee');
 	}
 Begin:
@@ -61,19 +61,19 @@ state Flee
 
 state KnockbackPlayer
 {
-	function Aim()
+	event Tick(float DeltaTime)
 	{
-		local Rotator final_rot;
-		final_rot = Rotator(PPawn.Location);
-		Pawn.SetRotation(final_rot);
-		Pawn.SetViewRotation(final_rot);
+		tempLoc = Pawn.Location - PPawn.Location;
+		distanceToPlayer = Abs(VSize(tempLoc));
 	}
 
 	Begin:
 		Pawn.ZeroMovementVariables();
 		while (distanceToPlayer <= minimumDefaultAttackDistance) {
-			Sleep(0.3);
-			Aim();
+			Sleep(1.0);
+			Pawn.LockDesiredRotation(false);
+			Pawn.SetDesiredRotation(Rotator(PPawn.Location - Pawn.Location));
+			Pawn.LockDesiredRotation(true, false);
 			Pawn.StartFire(0);
 			Pawn.StopFire(0);
 		}
