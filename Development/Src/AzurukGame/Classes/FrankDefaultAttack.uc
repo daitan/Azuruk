@@ -1,4 +1,4 @@
-class FrankDefaultAttack extends UDKWeapon;
+class FrankDefaultAttack extends Weapon;
 
 DefaultProperties
 {
