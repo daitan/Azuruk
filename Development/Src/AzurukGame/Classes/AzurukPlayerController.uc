@@ -46,34 +46,46 @@ function bool PerformedUseAction()
  */
 state PlayerWalking
 {
-	function PlayerMove(float DeltaTime)
+	function ProcessMove(float DeltaTime, vector NewAccel, eDoubleClickDir DoubleClickMove, rotator DeltaRot)
 	{
-		local eDoubleClickDir DoubleClickMove;
-		local AzurukPlayerPawn playerPawn;
-
-		super.PlayerMove(DeltaTime);
-		
-		if (bFirstKeyPress == true) {
-			clickTime = PlayerInput.DoubleClickTime;
-			bFirstKeyPress = false;
-		} else {
-			clickTime = PlayerInput.DoubleClickTimer;
-			bFirstKeyPress = true;
-		}
-
-		if (clickTime != PlayerInput.DoubleClickTime) {
-
-		}
-
-		playerPawn = AzurukPlayerPawn(Pawn);
-		DoubleClickMove = PlayerInput.CheckForDoubleClickMove( DeltaTime/WorldInfo.TimeDilation );
-		tempClick = DoubleClickMove;
-		
-		if (playerPawn != none && DoubleClickMove == EDoubleClickDir.DCLICK_Right || DoubleClickMove == EDoubleClickDir.DCLICK_Left)
+		if ( (DoubleClickMove == DCLICK_Active) && (Pawn.Physics == PHYS_Falling) )
+			DoubleClickDir = DCLICK_Active;
+		else if ( (DoubleClickMove != DCLICK_None) && ( (DoubleClickMove == DCLICK_Left) || (DoubleClickMove == DCLICK_Right) ) )
 		{
-			playerPawn.DoDodge(DoubleClickMove);
+			if ( AzurukPlayerPawn(Pawn).DoDodge(DoubleClickMove) )
+				DoubleClickDir = DCLICK_Active;
 		}
+
+		Super.ProcessMove(DeltaTime,NewAccel,DoubleClickMove,DeltaRot);
 	}
+
+	//Replaced function
+
+	//function PlayerMove(float DeltaTime)
+	//{
+	//	local eDoubleClickDir DoubleClickMove;
+	//	local AzurukPlayerPawn playerPawn;
+	//	super.PlayerMove(DeltaTime);
+		
+	//	if (bFirstKeyPress == true) {
+	//		clickTime = PlayerInput.DoubleClickTime;
+	//		bFirstKeyPress = false;
+	//	} else {
+	//		clickTime = PlayerInput.DoubleClickTimer;
+	//		bFirstKeyPress = true;
+	//	}
+
+	//	if (clickTime != PlayerInput.DoubleClickTime) {
+	//		playerPawn = AzurukPlayerPawn(Pawn);
+	//		DoubleClickMove = PlayerInput.CheckForDoubleClickMove( DeltaTime/WorldInfo.TimeDilation );
+	//		tempClick = DoubleClickMove;
+	//	}
+		
+	//	if (playerPawn != none && DoubleClickMove == EDoubleClickDir.DCLICK_Right || DoubleClickMove == EDoubleClickDir.DCLICK_Left)
+	//	{
+	//		playerPawn.DoDodge(DoubleClickMove);
+	//	}
+	//}
 begin:
 }
 
