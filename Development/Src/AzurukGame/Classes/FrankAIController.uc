@@ -52,17 +52,17 @@ auto state Idle
 	event SeePlayer(Pawn P)
 	{
 		PPawn = GetALocalPlayerController().Pawn;
-		GotoState('FindObject');
+		GotoState('FindShootableObject');
 	}
 Begin:
 	PPawn = none;
 }
 
-state FindObject
+state FindShootableObject
 {
 Begin:
-	closestUsableObject = FindUsableObject;
-	if (closestUsableObject = none) 
+	closestUsableObject = FindUsableObject();
+	if (closestUsableObject == none) 
 	{
 		GotoState('Flee');
 	} 
@@ -77,7 +77,7 @@ Begin:
 state ShootObject
 {
 Begin:
-	GotoState('FindObject');
+	GotoState('FindShootableObject');
 }
 
 state Flee

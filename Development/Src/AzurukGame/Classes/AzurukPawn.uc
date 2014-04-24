@@ -43,7 +43,7 @@ function PostBeginPlay()
 {
 	super.PostBeginPlay();
 	
-	spawnLoc = Pawn.Location;
+	spawnLoc = Location;
 	defaultFeatures.pawnMesh = Mesh.SkeletalMesh;
 	defaultFeatures.pawnAnimSet = Mesh.AnimSets[0];
 	defaultFeatures.pawnAnimTree = Mesh.AnimTreeTemplate;

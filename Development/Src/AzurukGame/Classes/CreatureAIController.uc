@@ -14,7 +14,7 @@ auto state Idle
 state ResetPosition
 {
 Begin:
-	MoveTo(AzurukPawn.spawnLoc);
+	//MoveTo(AzurukPawn.spawnLoc);
 	GotoState('Idle');
 }
 
