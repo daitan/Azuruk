@@ -1,18 +1,50 @@
-class FrankAIController extends AIController;
+class FrankAIController extends CreatureAIController;
 
 /*
  * Variables
  */
 var Actor target;
-var float minimumDistance, minimumDefaultAttackDistance,
+var float minimumDistance, minimumPrimaryAttackDistance, objectScanDistance,
 	distanceToPlayer, speed;
 var vector tempLoc;
 var Pawn PPawn;
+var ObjectPhysics closestUsableObject;
+var bool bCanFire;
 
-event Possess(Pawn inPawn, bool bVehicleTransition)
-{
-    super.Possess(inPawn, bVehicleTransition);
-    Pawn.SetMovementPhysics();
+/**
+ * Find usable object, returns -1 if no object found
+ */
+function ObjectPhysics FindUsableObject() {
+	local ObjectPhysics checkObject;
+	local ObjectPhysics closestObject;
+	local float objTempDist;
+	local float objDistanceToPlayer;
+	local vector objTempLoc;
+
+	objDistanceToPlayer = -1.0;
+
+	foreach Pawn.CollidingActors(class'AzurukGame.ObjectPhysics',checkObject,objectScanDistance)
+	{
+		if (checkObject.bFrankUsable == true) 
+		{
+			objTempLoc = Pawn.Location - checkObject.Location;
+			objTempDist = Abs(VSize(objTempLoc));
+			
+			//Get the closest object
+			if (objTempDist == -1.0) 
+			{
+				objDistanceToPlayer = objTempDist;
+				closestObject = checkObject;
+			}
+			else if (objTempDist < objDistanceToPlayer)
+			{
+				objDistanceToPlayer = objTempDist;
+				closestObject = checkObject;
+			}
+		}
+	}
+
+	return closestObject;
 }
  
 auto state Idle
@@ -20,21 +52,33 @@ auto state Idle
 	event SeePlayer(Pawn P)
 	{
 		PPawn = GetALocalPlayerController().Pawn;
-		GotoState('Flee');
+		GotoState('FindObject');
 	}
 Begin:
 	PPawn = none;
 }
 
-//state FindObject
-//{
+state FindObject
+{
+Begin:
+	closestUsableObject = FindUsableObject;
+	if (closestUsableObject = none) 
+	{
+		GotoState('Flee');
+	} 
+	else 
+	{
+		MoveToward(closestUsableObject,, 56.0);
+		closestUsableObject = none;
+		GotoState('ShootObject');
+	}
+}
 
-//}
-
-//state ShootObject
-//{
-
-//}
+state ShootObject
+{
+Begin:
+	GotoState('FindObject');
+}
 
 state Flee
 {
@@ -49,7 +93,7 @@ state Flee
 		distanceToPlayer = Abs(VSize(tempLoc));
 		if (distanceToPlayer > minimumDistance) {
 			PlayerOutOfReach();
-		} else if (distanceToPlayer <= minimumDefaultAttackDistance) {
+		} else if (distanceToPlayer <= minimumPrimaryAttackDistance) {
 			GotoState('KnockbackPlayer');
 		} else {
 			Pawn.Velocity = Normal(tempLoc) * speed;
@@ -67,22 +111,24 @@ state KnockbackPlayer
 		distanceToPlayer = Abs(VSize(tempLoc));
 	}
 
-	Begin:
-		Pawn.ZeroMovementVariables();
-		while (distanceToPlayer <= minimumDefaultAttackDistance) {
-			Sleep(1.0);
-			Pawn.LockDesiredRotation(false);
-			Pawn.SetDesiredRotation(Rotator(PPawn.Location - Pawn.Location));
-			Pawn.LockDesiredRotation(true, false);
-			Pawn.StartFire(0);
-			Pawn.StopFire(0);
-		}
-		GotoState('Flee');
+Begin:
+	Pawn.ZeroMovementVariables();
+	while (distanceToPlayer <= minimumPrimaryAttackDistance) {
+		Sleep(1.0);
+		Pawn.LockDesiredRotation(false);
+		Pawn.SetDesiredRotation(Rotator(PPawn.Location - Pawn.Location));
+		Pawn.LockDesiredRotation(true, false);
+		Pawn.StartFire(0);
+		Pawn.StopFire(0);
+	}
+	GotoState('Flee');
 }
 
 DefaultProperties
 {
-	minimumDistance = 1024.0;
-	minimumDefaultAttackDistance = 256.0;
-	speed = 200.0;
+	bCanFire=false
+	objectScanDistance=512.0
+	minimumDistance=1024.0
+	minimumPrimaryAttackDistance=256.0
+	speed=200.0
 }

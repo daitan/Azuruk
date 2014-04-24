@@ -1,4 +1,4 @@
-class FrankDefaultAttack extends Weapon;
+class FrankPrimaryAttack extends Weapon;
 
 DefaultProperties
 {

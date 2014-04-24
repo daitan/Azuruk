@@ -24,6 +24,9 @@ Struct PawnFeatures
  * Variables
  */
 
+// spawn location
+var vector spawnLoc;
+
 // PawnFeatures Default Features Object
 var PawnFeatures defaultFeatures;
 
@@ -40,6 +43,7 @@ function PostBeginPlay()
 {
 	super.PostBeginPlay();
 	
+	spawnLoc = Pawn.Location;
 	defaultFeatures.pawnMesh = Mesh.SkeletalMesh;
 	defaultFeatures.pawnAnimSet = Mesh.AnimSets[0];
 	defaultFeatures.pawnAnimTree = Mesh.AnimTreeTemplate;

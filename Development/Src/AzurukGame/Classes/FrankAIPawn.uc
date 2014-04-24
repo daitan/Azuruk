@@ -3,15 +3,14 @@ class FrankAIPawn extends AzurukPawn
 
 function AddDefaultInventory()
 {
-	InvManager.CreateInventory(class'AzurukGame.FrankDefaultAttack');
+	InvManager.CreateInventory(class'AzurukGame.FrankPrimaryAttack');
 }
 
 event PostBeginPlay()
 {
 	super.PostBeginPlay();
-	defaultFeatures.moveType = MOVE_Flying;
-	`log(defaultFeatures.moveType);
 	AddDefaultInventory();
+	defaultFeatures.moveType = MOVE_Walking;
 }
 
 DefaultProperties
@@ -38,6 +37,6 @@ DefaultProperties
     Mesh=PawnSkeletalMesh
     Components.Add(PawnSkeletalMesh)
 
-	InventoryManagerClass=class'AzurukGame.FrankInventoryManager'
+	InventoryManagerClass=class'AzurukGame.CreatureInventoryManager'
 	ControllerClass=class'AzurukGame.FrankAIController'
 }
