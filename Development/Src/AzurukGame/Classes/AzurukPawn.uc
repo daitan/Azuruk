@@ -1,15 +1,23 @@
 class AzurukPawn extends GamePawn
+	abstract
 	config(Game);
 
 /*
  * Functions to do with PawnFeatures
  * Struct - SkeletalMesh, AnimSet, AnimTree
  */
+enum MoveType
+{
+	MOVE_Walking,
+	MOVE_Flying,
+};
+
 Struct PawnFeatures
 {
     var SkeletalMesh pawnMesh;
     var AnimSet pawnAnimSet;
     var AnimTree pawnAnimTree;
+	var MoveType moveType;
 };
 
 /*

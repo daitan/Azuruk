@@ -10,12 +10,12 @@ var bool bFirstKeyPress;
 /*
  * Camera Zoom Execute Functions
  */
-exec function GBA_ZoomIn()
+exec function CamZoomIn()
 {
 	AzurukCamera(PlayerCamera).ZoomIn();
 }
 
-exec function GBA_ZoomOut()
+exec function CamZoomOut()
 {
 	AzurukCamera(PlayerCamera).ZoomOut();
 }
@@ -23,9 +23,14 @@ exec function GBA_ZoomOut()
 /*
  * Morphing Execute Functions
  */
-exec function GBA_Transform()
+exec function TransformOne()
 {
 	AzurukPlayerPawn(Pawn).SetMorphSet(0);
+}
+
+exec function TransformTwo()
+{
+	AzurukPlayerPawn(Pawn).SetMorphSet(1);
 }
 
 function bool PerformedUseAction()
@@ -91,7 +96,6 @@ begin:
 
 defaultproperties
 {
-	bFirstKeyPress=PlayerInput.DoubleClickTime
 	clickTime=0.25
 	CameraClass=class'AzurukGame.AzurukCamera'
 }

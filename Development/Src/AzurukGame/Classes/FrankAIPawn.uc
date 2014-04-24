@@ -9,6 +9,8 @@ function AddDefaultInventory()
 event PostBeginPlay()
 {
 	super.PostBeginPlay();
+	defaultFeatures.moveType = MOVE_Flying;
+	`log(defaultFeatures.moveType);
 	AddDefaultInventory();
 }
 

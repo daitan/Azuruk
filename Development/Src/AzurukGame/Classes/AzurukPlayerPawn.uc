@@ -26,7 +26,8 @@ var bool blockingState;
 function PostBeginPlay()
 {
 	super.PostBeginPlay();
-	
+
+	defaultFeatures.moveType = MOVE_Walking;
 	currentFeatures = defaultFeatures;
 }
 
@@ -65,10 +66,23 @@ function SetMorphSet(int index)
 		Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
 		Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
 		Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
-		if (MorphCurrentForm == 1) {
+		
+		if (defaultFeatures.moveType == MOVE_Walking)
+		{
+			GotoState('PlayerWalking');
+		}
+		else if (defaultFeatures.moveType == MOVE_Flying)
+		{
+			GotoState('PlayerFlying');
+		}
+
+		if (MorphCurrentForm == 1)
+		{
 			StopRechargeFormOne();
 			SetTimer(UpdateRate, true, 'DrainMorphEnergyFormOne');
-		} else if (MorphCurrentForm == 2) {
+		} 
+		else if (MorphCurrentForm == 2)
+		{
 			StopRechargeFormTwo();
 			SetTimer(UpdateRate, true, 'DrainMorphEnergyFormTwo');
 		}
