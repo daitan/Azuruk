@@ -4,7 +4,7 @@ class ObjectPhysicsTreePod extends ObjectPhysics
 DefaultProperties
 {
 	Begin Object Name=ObjectPhysicsMesh
-	StaticMesh = StaticMesh'' 
+	//StaticMesh=StaticMesh'' 
 	End Object
 	Components(1)=ObjectPhysicsMesh
 	CollisionComponent = ObjectPhysicsMesh

@@ -20,7 +20,7 @@ DefaultProperties
 
 	Begin Object Class=StaticMeshComponent Name=ObjectPhysicsMesh
 	
-	StaticMesh=StaticMesh''
+	// StaticMesh=StaticMesh''
 	bNotifyRigidBodyCollision=true
 	
 	HiddenGame=FALSE 
