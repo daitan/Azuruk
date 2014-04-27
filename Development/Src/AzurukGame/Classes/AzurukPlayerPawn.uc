@@ -13,10 +13,11 @@ var() const Name SwordHandSocketName;
  * Variables
  */
 var PawnFeatures morphSets[4], currentFeatures;
-var Pawn interactingPawn;
-var int MorphCurrentForm;
+var Pawn interactingPawn, lastPawnTouched;
+var int MorphCurrentForm, numStoredMorphs;
 var float MorphEnergyDrainRate, MorphEnergyRechargeRate, UpdateRate,
 		  MorphEnergyMax, MorphEnergyCurrent[4], MorphEnergyRechargeDelay;
+var bool bNoEmptyMorphs;
 
 /*
  * AzurukPlayerPawn Initializations
@@ -89,17 +90,48 @@ function SetMorphSet(int index)
 function bool GetMorphSet()
 {
 	local int i;
+
 	if (interactingPawn != none)
 	{
+		if (!bNoEmptyMorphs) {
+			for (i = 0; i < ArrayCount(morphSets); i++)
+			{
+				if (morphSets[i].pawnMesh == none)
+				{
+					morphSets[i] = returnPawnFeatures(interactingPawn);
+					numStoredMorphs += 1;
+					if (numStoredMorphs == ArrayCount(morphSets)) {
+						bNoEmptyMorphs = true;
+					}
+					break;
+				}
+			}
+		}
+		else
+		{
+			`log("morph selection");
+			ConsoleCommand("ToggleMorphSelectionMenu");
+		}
+	}
+	return true;
+}
+
+/**
+ * Set morph for specific index
+ */
+function SetMorph(Pawn P, int index) {
+	local int i;
+
+	if (P != none) {
 		for (i = 0; i < ArrayCount(morphSets); i++)
 		{
-			if (morphSets[i].pawnMesh == none)
+			if (i == index)
 			{
-				morphSets[i] = returnPawnFeatures(interactingPawn);
+				morphSets[i] = returnPawnFeatures(P);
+				break;
 			}
 		}	
 	}
-	return true;
 }
 
 exec function GBA_DefaultFormTransform()
@@ -282,6 +314,9 @@ defaultproperties
 	MorphEnergyCurrent[3]=100.0
 
 	UpdateRate=0.01
+
+	bNoEmptyMorphs=false
+	numStoredMorphs=0
 	
 	InventoryManagerClass=class'AzurukGame.AzurukInventoryManager'
 	PlayerControllerClass=class'AzurukGame.AzurukPlayerController'

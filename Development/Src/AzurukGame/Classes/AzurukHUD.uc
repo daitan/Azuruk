@@ -64,6 +64,14 @@ function DrawCustomText(String Text, int X, int Y, int R, int G, int B, int A)
 	Canvas.DrawText(Text);
 }
 
+function DrawTextSimple(string text, Vector2D position, Font font, Color text_color)
+{
+	Canvas.SetPos(position.X,position.Y);
+	Canvas.SetDrawColorStruct(text_color);
+	Canvas.Font = font;
+	Canvas.DrawText(text);
+}
+
 function String GetCurrentFormToString(AzurukPlayerPawn p) {
 	currentForm = p.GetMorphCurrentForm();
 	switch (currentForm)
@@ -78,6 +86,8 @@ function String GetCurrentFormToString(AzurukPlayerPawn p) {
 			return "UNKNOWN FORM";
 	}
 }
+
+
 
 DefaultProperties
 {
