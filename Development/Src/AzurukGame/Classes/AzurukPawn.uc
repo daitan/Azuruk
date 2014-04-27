@@ -6,23 +6,20 @@ class AzurukPawn extends GamePawn
  * Functions to do with PawnFeatures
  * Struct - SkeletalMesh, AnimSet, AnimTree
  */
-enum MoveType
-{
-	MOVE_Walking,
-	MOVE_Flying,
-};
-
 Struct PawnFeatures
 {
     var SkeletalMesh pawnMesh;
     var AnimSet pawnAnimSet;
     var AnimTree pawnAnimTree;
-	var MoveType moveType;
+	var class<PlayerController> PlayerControllerClass;
 };
 
 /*
  * Variables
  */
+
+// Players Controller
+var class<PlayerController> PlayerControllerClass;
 
 // spawn location
 var vector spawnLoc;
@@ -47,9 +44,33 @@ function PostBeginPlay()
 	defaultFeatures.pawnMesh = Mesh.SkeletalMesh;
 	defaultFeatures.pawnAnimSet = Mesh.AnimSets[0];
 	defaultFeatures.pawnAnimTree = Mesh.AnimTreeTemplate;
+	defaultFeatures.PlayerControllerClass = PlayerControllerClass;
 }
 
-//Returns the features of the Pawn
+/*
+ * Assign New Controller
+ */
+function ReplacePlayerController(class<PlayerController> morphController)
+{
+	if ( morphController != None )
+	{
+		Controller = Spawn(morphController);
+		Controller.Possess( Self, false );
+
+		if ( Controller != None )
+		{
+			DetachFromController( true );
+		}
+	}
+	else
+	{
+		`warn("Class Not Specified");
+	}
+}
+
+/*
+ * Returns the features of the Pawn
+ */
 function PawnFeatures returnPawnFeatures(Pawn Other)
 {
 	return AzurukPawn(Other).defaultFeatures;

@@ -10,7 +10,6 @@ event PostBeginPlay()
 {
 	super.PostBeginPlay();
 	AddDefaultInventory();
-	defaultFeatures.moveType = MOVE_Walking;
 }
 
 DefaultProperties
@@ -39,4 +38,5 @@ DefaultProperties
 
 	InventoryManagerClass=class'AzurukGame.CreatureInventoryManager'
 	ControllerClass=class'AzurukGame.FrankAIController'
+	PlayerControllerClass=class'AzurukGame.AzurukController'
 }

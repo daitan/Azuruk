@@ -3,45 +3,23 @@
  */
 class AzurukPlayerController extends AzurukController;
 
+/*
+ * Variables
+ */
 var eDoubleClickDir tempClick;
 var float clickTime;
 var bool bFirstKeyPress;
 
 /*
- * Camera Zoom Execute Functions
+ * PerformedUseAction Override 
+ * 
+ * @change - added check for creature DNA collection
  */
-exec function CamZoomIn()
-{
-	AzurukCamera(PlayerCamera).ZoomIn();
-}
-
-exec function CamZoomOut()
-{
-	AzurukCamera(PlayerCamera).ZoomOut();
-}
-
-/*
- * Morphing Execute Functions
- */
-exec function TransformOne()
-{
-	AzurukPlayerPawn(Pawn).SetMorphSet(0);
-}
-
-exec function TransformTwo()
-{
-	AzurukPlayerPawn(Pawn).SetMorphSet(1);
-}
-
 function bool PerformedUseAction()
 {
 	super.PerformedUseAction();
 
-	if (AzurukPlayerPawn(Pawn).interactingPawn != none)
-	{
-		AzurukPlayerPawn(Pawn).morphSets[0] = AzurukPlayerPawn(Pawn).returnPawnFeatures(AzurukPlayerPawn(Pawn).interactingPawn);
-		return true;
-	}
+	return AzurukPlayerPawn(Pawn).GetMorphSet();
 }
 
 /*
@@ -97,5 +75,4 @@ begin:
 defaultproperties
 {
 	clickTime=0.25
-	CameraClass=class'AzurukGame.AzurukCamera'
 }

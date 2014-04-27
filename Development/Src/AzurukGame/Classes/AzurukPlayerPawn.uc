@@ -25,12 +25,13 @@ function PostBeginPlay()
 {
 	super.PostBeginPlay();
 
-	defaultFeatures.moveType = MOVE_Walking;
 	currentFeatures = defaultFeatures;
 }
 
 /*
- * Camera Related Functions
+ * GetDefaultCameraMode
+ * 
+ * @change - sets default camera to ThirdPerson
  */
 simulated function name GetDefaultCameraMode( PlayerController RequestedBy )
 {
@@ -38,19 +39,10 @@ simulated function name GetDefaultCameraMode( PlayerController RequestedBy )
 }
 
 /*
- * Mesh, AnimSet and AnimTree Changes
- * Related to Morphing Mechanic
+ * SetMorphSet
+ * 
+ * Sets the pawns features according to the index of morphSets[]
  */
-
-exec function GBA_DefaultFormTransform()
-{
-	MorphCurrentForm = 0;
-	currentFeatures = defaultFeatures;
-	Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
-	Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
-	Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
-}
-
 function SetMorphSet(int index)
 {
 	if (morphSets[index].pawnMesh == none && MorphEnergyCurrent[index] != 0)
@@ -64,16 +56,8 @@ function SetMorphSet(int index)
 		Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
 		Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
 		Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
+		ReplacePlayerController(currentFeatures.PlayerControllerClass);
 		
-		if (defaultFeatures.moveType == MOVE_Walking)
-		{
-			GotoState('PlayerWalking');
-		}
-		else if (defaultFeatures.moveType == MOVE_Flying)
-		{
-			GotoState('PlayerFlying');
-		}
-
 		if (MorphCurrentForm == 1)
 		{
 			StopRechargeFormOne();
@@ -94,6 +78,38 @@ function SetMorphSet(int index)
 		}
 		GBA_DefaultFormTransform();
 	}
+}
+
+/*
+ * GetMorphSet
+ * 
+ * Gets the morphSet from a dead touched pawn (interactingPawn)
+ */
+
+function bool GetMorphSet()
+{
+	local int i;
+	if (interactingPawn != none)
+	{
+		for (i = 0; i < ArrayCount(morphSets); i++)
+		{
+			if (morphSets[i].pawnMesh == none)
+			{
+				morphSets[i] = returnPawnFeatures(interactingPawn);
+			}
+		}	
+	}
+	return true;
+}
+
+exec function GBA_DefaultFormTransform()
+{
+	MorphCurrentForm = 0;
+	currentFeatures = defaultFeatures;
+	Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
+	Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
+	Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
+	ReplacePlayerController(currentFeatures.PlayerControllerClass);
 }
 
 function int GetMorphCurrentForm()
@@ -228,12 +244,14 @@ function StopMorphFormTwo()
 
 /*
  * Touch Event Overloads
+ * 
+ * @change - sets interactingPawn if a Pawn is touched & dead
  */
 event Touch(Actor Other, PrimitiveComponent OtherComp, Vector HitLocation, Vector HitNormal)
 {
     super.Touch(Other, OtherComp, HitLocation, HitNormal);
 
-    if (Pawn(Other) != none)
+    if (Pawn(Other) != none && Pawn(Other).Health <= 0)
     {
 		interactingPawn = Pawn(Other);
     }
@@ -266,6 +284,7 @@ defaultproperties
 	UpdateRate=0.01
 	
 	InventoryManagerClass=class'AzurukGame.AzurukInventoryManager'
+	PlayerControllerClass=class'AzurukGame.AzurukPlayerController'
 
 	SwordHandSocketName="WeaponPoint"
 
