@@ -12,11 +12,11 @@ var() const Name SwordHandSocketName;
 /*
  * Variables
  */
-var PawnFeatures morphSets[4], currentFeatures;
+var PawnFeatures morphSets[2], currentFeatures;
 var Pawn interactingPawn, lastPawnTouched;
 var int MorphCurrentForm, numStoredMorphs;
 var float MorphEnergyDrainRate, MorphEnergyRechargeRate, UpdateRate,
-		  MorphEnergyMax, MorphEnergyCurrent[4], MorphEnergyRechargeDelay;
+		  MorphEnergyMax, MorphEnergyCurrent[2], MorphEnergyRechargeDelay;
 var bool bNoEmptyMorphs;
 
 /*
@@ -109,8 +109,7 @@ function bool GetMorphSet()
 		}
 		else
 		{
-			`log("morph selection");
-			ConsoleCommand("ToggleMorphSelectionMenu");
+			AzurukHUD(PlayerController(Controller).myHUD).ToggleMorphSelectionMenu();
 		}
 	}
 	return true;
@@ -310,8 +309,6 @@ defaultproperties
 
 	MorphEnergyCurrent[0]=100.0
 	MorphEnergyCurrent[1]=100.0
-	MorphEnergyCurrent[2]=100.0
-	MorphEnergyCurrent[3]=100.0
 
 	UpdateRate=0.01
 

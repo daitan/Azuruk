@@ -5,19 +5,21 @@ class AzurukHUD extends HUD
  * Variables
  */
 var AzurukPlayerPawn PPawn;
-var int currentForm;
+var int currentForm, CurrentIndex;
+var bool bShowMorphSelectionMenu;
+var array<string> Commands;
 
 simulated event postrender()
-	{
-		super.postrender();
-		DrawGameHUD();
-	}
+{
+	super.postrender();
+	PPawn = AzurukPlayerPawn(PlayerOwner.Pawn);
+	DrawGameHUD();
+	DrawMorphSelectionMenu();
+}
 	
 
 function DrawGameHUD()
 {
-	PPawn = AzurukPlayerPawn(PlayerOwner.Pawn);
-
     if (!PlayerOwner.IsDead())
     {
         DrawBar("Health",PlayerOwner.Pawn.Health, PlayerOwner.Pawn.HealthMax,20,20,200,80,80,200);
@@ -87,9 +89,77 @@ function String GetCurrentFormToString(AzurukPlayerPawn p) {
 	}
 }
 
+function ToggleMorphSelectionMenu()
+{
+	CurrentIndex = 0;
+	bShowMorphSelectionMenu = !bShowMorphSelectionMenu;
+	PPawn.SetCinematicMode(bShowMorphSelectionMenu);
+}
 
+exec function NextMenuItem()
+{
+	if (bShowMorphSelectionMenu)
+	{
+		CurrentIndex = Min(CurrentIndex + 1, Commands.Length - 1);
+	}
+}
+
+exec function PreviousMenuItem()
+{
+	if (bShowMorphSelectionMenu)
+	{
+		CurrentIndex = Max(CurrentIndex - 1, 0);
+	}
+}
+
+exec function SetPlayerMorphSet()
+{
+	if (bShowMorphSelectionMenu)
+	{
+		PPawn.SetMorph(PPawn.lastPawnTouched, CurrentIndex);
+		ToggleMorphSelectionMenu();
+	}
+}
+
+function DrawMorphSelectionMenu()
+{
+	local float XL, YL, YPos;
+	local int array_index;
+	local Color command_color;
+	local string cmd;
+
+    if (bShowMorphSelectionMenu)
+    {
+		Canvas.Font = class'Engine'.Static.GetLargeFont();
+		Canvas.StrLen("X", XL, YL);
+		YPos = 0;
+		Canvas.SetPos(0,0);
+		Canvas.SetDrawColor(10,10,10,128);
+		Canvas.DrawRect(Canvas.SizeX, Canvas.SizeY); //Adding a dark overlay to visually notify we're in the menu.
+		DrawTextSimple("Morph Selection Menu", vect2d(0,YPos), Canvas.Font, WhiteColor);
+		YPos += YL;
+
+		foreach Commands(cmd, array_index)
+		{
+			if (array_index == CurrentIndex)
+			{
+				command_color = GreenColor;
+			}
+			else
+			{
+				command_color = WhiteColor;
+			}
+			DrawTextSimple(array_index$":"@cmd, vect2d(0,YPos), Canvas.Font, command_color);
+			YPos += YL;
+		}
+	}
+}
 
 DefaultProperties
 {
+	bShowMorphSelectionMenu=false
+	CurrentIndex=0
+	Commands(0)="Replace First Form"
+	Commands(1)="Replace Second Form"
 	currentForm = 0;
 }
