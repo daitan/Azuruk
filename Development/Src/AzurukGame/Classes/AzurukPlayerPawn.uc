@@ -18,8 +18,6 @@ var int MorphCurrentForm;
 var float MorphEnergyDrainRate, MorphEnergyRechargeRate, UpdateRate,
 		  MorphEnergyMax, MorphEnergyCurrent[4], MorphEnergyRechargeDelay;
 
-var bool blockingState;
-
 /*
  * AzurukPlayerPawn Initializations
  */
@@ -249,28 +247,6 @@ event UnTouch(Actor Other)
     {
         interactingPawn = none;
     }
-}
-
-/*
- * Blocking State Functions
- */
-simulated function bool isBlocking()
-{
-	return blockingState;
-}
-
-simulated function StartFire(byte FireModeNum)
-{
-	super.StartFire(FireModeNum);
-	if(FireModeNum == 1)
-			blockingState = true;
-}
-
-simulated function StopFire(byte FireModeNum)
-{
-	super.StartFire(FireModeNum);
-	if(FireModeNum == 1)
-			blockingState = false;
 }
 
 defaultproperties

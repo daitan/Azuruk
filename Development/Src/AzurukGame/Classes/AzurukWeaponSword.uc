@@ -101,16 +101,7 @@ function Vector GetSwordSocketLocation(Name SocketName)
 function bool AddToSwingHitActors(Actor HitActor)
 {
    local int i;
-   local AzurukPlayerPawn hitPawn;
 
-   if (AzurukPlayerPawn(HitActor) != none)
-   {
-      hitPawn = AzurukPlayerPawn(HitActor);
-
-	  if(hitPawn.isBlocking())
-	     return false;
-   }
-	
    for (i = 0; i < SwingHitActors.Length; i++)
    {
       if (SwingHitActors[i] == HitActor)

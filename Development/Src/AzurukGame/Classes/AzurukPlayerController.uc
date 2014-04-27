@@ -55,7 +55,7 @@ state PlayerWalking
 	{
 		if ( (DoubleClickMove == DCLICK_Active) && (Pawn.Physics == PHYS_Falling) )
 			DoubleClickDir = DCLICK_Active;
-		else if ( (DoubleClickMove != DCLICK_None) && ( (DoubleClickMove == DCLICK_Left) || (DoubleClickMove == DCLICK_Right) ) )
+		else if ( (DoubleClickMove != DCLICK_None) && (DoubleClickMove < DCLICK_Active) )
 		{
 			if ( AzurukPlayerPawn(Pawn).DoDodge(DoubleClickMove) )
 				DoubleClickDir = DCLICK_Active;
