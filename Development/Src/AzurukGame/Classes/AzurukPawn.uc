@@ -2,6 +2,13 @@ class AzurukPawn extends GamePawn
 	abstract
 	config(Game);
 
+enum MoveType
+{
+	M_Flying,
+	M_DefaultWalking,
+	M_LargeWalking,
+};
+
 /*
  * Functions to do with PawnFeatures
  * Struct - SkeletalMesh, AnimSet, AnimTree
@@ -11,21 +18,19 @@ Struct PawnFeatures
     var SkeletalMesh pawnMesh;
     var AnimSet pawnAnimSet;
     var AnimTree pawnAnimTree;
-	var class<PlayerController> PlayerControllerClass;
+	var MoveType pawnMoveType;
 };
 
 /*
  * Variables
  */
 
-// Players Controller
-var class<PlayerController> PlayerControllerClass;
-
 // spawn location
 var vector spawnLoc;
 
 // PawnFeatures Default Features Object
 var PawnFeatures defaultFeatures;
+var MoveType defaultMoveType;
 
 // Dodging
 var vector DodgeVelocity;
@@ -44,28 +49,7 @@ function PostBeginPlay()
 	defaultFeatures.pawnMesh = Mesh.SkeletalMesh;
 	defaultFeatures.pawnAnimSet = Mesh.AnimSets[0];
 	defaultFeatures.pawnAnimTree = Mesh.AnimTreeTemplate;
-	defaultFeatures.PlayerControllerClass = PlayerControllerClass;
-}
-
-/*
- * Assign New Controller
- */
-function ReplacePlayerController(class<PlayerController> morphController)
-{
-	if ( morphController != None )
-	{
-		Controller = Spawn(morphController);
-		Controller.Possess( Self, false );
-
-		if ( Controller != None )
-		{
-			DetachFromController( true );
-		}
-	}
-	else
-	{
-		`warn("Class Not Specified");
-	}
+	defaultFeatures.pawnMoveType = defaultMoveType;
 }
 
 /*
@@ -181,6 +165,7 @@ function UnDodge()
 
 defaultproperties
 {
+	defaultMoveType = M_DefaultWalking
 	DodgeSpeed = 1200
 	DodgeDuration = 0.3
 	isDodging = false

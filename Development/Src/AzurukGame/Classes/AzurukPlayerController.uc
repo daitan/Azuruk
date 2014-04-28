@@ -38,35 +38,19 @@ state PlayerWalking
 
 		Super.ProcessMove(DeltaTime,NewAccel,DoubleClickMove,DeltaRot);
 	}
-
-	//Replaced function
-
-	//function PlayerMove(float DeltaTime)
-	//{
-	//	local eDoubleClickDir DoubleClickMove;
-	//	local AzurukPlayerPawn playerPawn;
-	//	super.PlayerMove(DeltaTime);
-		
-	//	if (bFirstKeyPress == true) {
-	//		clickTime = PlayerInput.DoubleClickTime;
-	//		bFirstKeyPress = false;
-	//	} else {
-	//		clickTime = PlayerInput.DoubleClickTimer;
-	//		bFirstKeyPress = true;
-	//	}
-
-	//	if (clickTime != PlayerInput.DoubleClickTime) {
-	//		playerPawn = AzurukPlayerPawn(Pawn);
-	//		DoubleClickMove = PlayerInput.CheckForDoubleClickMove( DeltaTime/WorldInfo.TimeDilation );
-	//		tempClick = DoubleClickMove;
-	//	}
-		
-	//	if (playerPawn != none && DoubleClickMove == EDoubleClickDir.DCLICK_Right || DoubleClickMove == EDoubleClickDir.DCLICK_Left)
-	//	{
-	//		playerPawn.DoDodge(DoubleClickMove);
-	//	}
-	//}
 begin:
+}
+
+function ProcessViewRotation( float DeltaTime, out Rotator out_ViewRotation, Rotator DeltaRot )
+{
+	switch (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType)
+	{
+		case M_LargeWalking:
+			DeltaRot.Yaw /= 6;
+			break;
+	}
+
+	super.ProcessViewRotation(DeltaTime, out_ViewRotation, DeltaRot);
 }
 
 defaultproperties

@@ -57,7 +57,6 @@ function SetMorphSet(int index)
 		Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
 		Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
 		Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
-		ReplacePlayerController(currentFeatures.PlayerControllerClass);
 		
 		if (MorphCurrentForm == 1)
 		{
@@ -140,7 +139,6 @@ exec function GBA_DefaultFormTransform()
 	Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
 	Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
 	Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
-	ReplacePlayerController(currentFeatures.PlayerControllerClass);
 }
 
 function int GetMorphCurrentForm()
@@ -300,6 +298,8 @@ event UnTouch(Actor Other)
 
 defaultproperties
 {
+	defaultMoveType = M_LargeWalking
+
 	MorphCurrentForm = 0;
 
 	MorphEnergyMax=100.0
@@ -316,7 +316,6 @@ defaultproperties
 	numStoredMorphs=0
 	
 	InventoryManagerClass=class'AzurukGame.AzurukInventoryManager'
-	PlayerControllerClass=class'AzurukGame.AzurukPlayerController'
 
 	SwordHandSocketName="WeaponPoint"
 

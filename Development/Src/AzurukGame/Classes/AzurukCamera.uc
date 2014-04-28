@@ -69,15 +69,6 @@ function UpdateViewTarget(out TViewTarget OutVT, float DeltaTime)
 					OutVT.POV.Location = (HitActor == None) ? Loc : HitLocation;
 
 				break;
-
-				case 'FirstPerson':   
-					OutVT.Target.GetActorEyesViewPoint(OutVT.POV.Location, OutVT.POV.Rotation);
-					// Take into account Mesh Translation so it takes into account the PostProcessing we do there.
-					if ((TPawn != None) && (TPawn.Mesh != None))
-					{
-						OutVT.POV.Location += (TPawn.Mesh.Translation - TPawn.default.Mesh.Translation) >> OutVT.Target.Rotation;
-					}
-				break;
 			}
 		}
 	}

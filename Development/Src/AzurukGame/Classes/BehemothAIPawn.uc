@@ -1,20 +1,9 @@
-class FrankAIPawn extends AzurukPawn
+class BehemothAIPawn extends AzurukPawn
 	placeable;
-
-function AddDefaultInventory()
-{
-	InvManager.CreateInventory(class'AzurukGame.FrankPrimaryAttack');
-}
-
-event PostBeginPlay()
-{
-	super.PostBeginPlay();
-	AddDefaultInventory();
-}
 
 DefaultProperties
 {
-	defaultMoveType = M_DefaultWalking
+	defaultMoveType = M_LargeWalking
 
 	RotationRate=(Pitch=20000,Yaw=60000,Roll=20000)
 
@@ -31,13 +20,11 @@ DefaultProperties
 	Components.Add(CollisionCylinder)
 
     Begin Object Class=SkeletalMeshComponent Name=PawnSkeletalMesh
-		SkeletalMesh=SkeletalMesh'Creatures_Frank.SkeletalMeshes.frank'
-		AnimSets[0]=AnimSet'Creatures_Frank.AnimSet.FrankAnims'
-		AnimTreeTemplate=AnimTree'Creatures_Frank.AnimTree.FrankAnimTree'
+		SkeletalMesh=SkeletalMesh'Creatures_Behemoth.SkeletalMeshes.Skel_Behemoth'
+		AnimSets[0]=AnimSet'Creatures_Behemoth.AnimSet.behemothArmature'
     End Object
     Mesh=PawnSkeletalMesh
     Components.Add(PawnSkeletalMesh)
 
 	InventoryManagerClass=class'AzurukGame.CreatureInventoryManager'
-	ControllerClass=class'AzurukGame.FrankAIController'
 }

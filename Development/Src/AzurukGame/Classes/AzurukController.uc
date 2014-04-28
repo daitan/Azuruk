@@ -1,4 +1,4 @@
-class AzurukController extends GamePlayerController
+class AzurukController extends PlayerController
 	config(Game);
 
 /*
