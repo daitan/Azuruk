@@ -22,6 +22,7 @@ DefaultProperties
     Begin Object Class=SkeletalMeshComponent Name=PawnSkeletalMesh
 		SkeletalMesh=SkeletalMesh'Creatures_Behemoth.SkeletalMeshes.Skel_Behemoth'
 		AnimSets[0]=AnimSet'Creatures_Behemoth.AnimSet.behemothArmature'
+		AnimTreeTemplate=AnimTree'Creatures_Behemoth.AnimTree.behemothAnimTree'
     End Object
     Mesh=PawnSkeletalMesh
     Components.Add(PawnSkeletalMesh)

@@ -298,8 +298,6 @@ event UnTouch(Actor Other)
 
 defaultproperties
 {
-	defaultMoveType = M_LargeWalking
-
 	MorphCurrentForm = 0;
 
 	MorphEnergyMax=100.0
