@@ -28,4 +28,5 @@ DefaultProperties
     Components.Add(PawnSkeletalMesh)
 
 	InventoryManagerClass=class'AzurukGame.CreatureInventoryManager'
+	ControllerClass=class'AzurukGame.BehemothAIController'
 }

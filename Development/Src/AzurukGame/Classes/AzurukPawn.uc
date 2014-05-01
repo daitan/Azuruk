@@ -166,6 +166,7 @@ function UnDodge()
 defaultproperties
 {
 	defaultMoveType = M_DefaultWalking
+
 	DodgeSpeed = 1200
 	DodgeDuration = 0.3
 	isDodging = false

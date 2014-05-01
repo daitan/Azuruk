@@ -23,6 +23,14 @@ state Dead
 	// TODO:
 }
 
+state Stunned
+{
+	event Tick(float DeltaTime)
+	{
+		`log("Stunned");
+	}
+}
+
 DefaultProperties
 {
 }
