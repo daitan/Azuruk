@@ -1,5 +1,7 @@
 class CreatureAIController extends AIController;
 
+var float stunTime;
+
 event Possess(Pawn inPawn, bool bVehicleTransition)
 {
     super.Possess(inPawn, bVehicleTransition);
@@ -25,12 +27,15 @@ state Dead
 
 state Stunned
 {
-	event Tick(float DeltaTime)
+	event BeginState(name PreviousStateName)
 	{
-		`log("Stunned");
+		GotoState(PreviousStateName);
 	}
+Begin:
+	Sleep(stunTime);
 }
 
 DefaultProperties
 {
+	stunTime = 3.0
 }
