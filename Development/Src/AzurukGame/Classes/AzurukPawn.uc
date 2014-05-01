@@ -78,12 +78,20 @@ function bool DoDodge(eDoubleClickDir DoubleClickMove)
 		switch ( DoubleClickMove )
 		{
 			//dodge left
-			case DClick_Left:
+			case DCLICK_Left:
 				DodgeVelocity = -DodgeSpeed*Normal(Y);
 				break;
 			//dodge right
-			case DClick_Right:
+			case DCLICK_Right:
 				DodgeVelocity = DodgeSpeed*Normal(Y);
+				break;
+				//dodge left
+			case DCLICK_Forward:
+				DodgeVelocity = DodgeSpeed*Normal(X);
+				break;
+			//dodge right
+			case DCLICK_Back:
+				DodgeVelocity = -DodgeSpeed*Normal(X);
 				break;
 			//in case there is an error
 			default:
