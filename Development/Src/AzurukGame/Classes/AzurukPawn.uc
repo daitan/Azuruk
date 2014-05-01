@@ -19,6 +19,7 @@ Struct PawnFeatures
     var AnimSet pawnAnimSet;
     var AnimTree pawnAnimTree;
 	var MoveType pawnMoveType;
+	var string CreatureName;
 };
 
 /*

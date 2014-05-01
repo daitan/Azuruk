@@ -5,9 +5,8 @@ class AzurukHUD extends HUD
  * Variables
  */
 var AzurukPlayerPawn PPawn;
-var int currentForm, CurrentIndex;
+var int CurrentIndex;
 var bool bShowMorphSelectionMenu;
-var array<string> Commands;
 
 simulated event postrender()
 {
@@ -25,7 +24,7 @@ function DrawGameHUD()
         DrawBar("Health",PlayerOwner.Pawn.Health, PlayerOwner.Pawn.HealthMax,20,20,200,80,80,200);
 		DrawBar("Form One",PPawn.GetMorphEnergyCurrent(0),PPawn.GetMorphEnergyMax(),20,40,80,80,255,200);
 		DrawBar("Form Two",PPawn.GetMorphEnergyCurrent(1),PPawn.GetMorphEnergyMax(),20,60,80,80,255,200);
-		DrawCustomText(GetCurrentFormToString(PPawn),20,80,80,80,255,200);
+		DrawCustomText(PPawn.currentFeatures.CreatureName,20,80,80,80,255,200);
     }
 }
 
@@ -74,25 +73,11 @@ function DrawTextSimple(string text, Vector2D position, Font font, Color text_co
 	Canvas.DrawText(text);
 }
 
-function String GetCurrentFormToString(AzurukPlayerPawn p) {
-	currentForm = p.GetMorphCurrentForm();
-	switch (currentForm)
-	{
-		case 0:
-			return "Default Form";
-		case 1:
-			return "Form One";
-		case 2:
-			return "Form Two";
-		default:
-			return "UNKNOWN FORM";
-	}
-}
-
-function ToggleMorphSelectionMenu()
+exec function ToggleMorphSelectionMenu()
 {
 	CurrentIndex = 0;
 	bShowMorphSelectionMenu = !bShowMorphSelectionMenu;
+	PPawn.bInMenu = !PPawn.bInMenu;
 	PPawn.SetCinematicMode(bShowMorphSelectionMenu);
 }
 
@@ -100,7 +85,7 @@ exec function NextMenuItem()
 {
 	if (bShowMorphSelectionMenu)
 	{
-		CurrentIndex = Min(CurrentIndex + 1, Commands.Length - 1);
+		CurrentIndex = Min(CurrentIndex + 1, ArrayCount(PPawn.morphSets) - 1);
 	}
 }
 
@@ -126,7 +111,8 @@ function DrawMorphSelectionMenu()
 	local float XL, YL, YPos;
 	local int array_index;
 	local Color command_color;
-	local string cmd;
+	local string creature_name;
+	local array<string> names;
 
     if (bShowMorphSelectionMenu)
     {
@@ -139,7 +125,8 @@ function DrawMorphSelectionMenu()
 		DrawTextSimple("Morph Selection Menu", vect2d(0,YPos), Canvas.Font, WhiteColor);
 		YPos += YL;
 
-		foreach Commands(cmd, array_index)
+		names = PPawn.GetCurrentCreatureNames();
+		foreach names (creature_name, array_index)
 		{
 			if (array_index == CurrentIndex)
 			{
@@ -149,17 +136,21 @@ function DrawMorphSelectionMenu()
 			{
 				command_color = WhiteColor;
 			}
-			DrawTextSimple(array_index$":"@cmd, vect2d(0,YPos), Canvas.Font, command_color);
+			DrawTextSimple(array_index$":"@creature_name, vect2d(0,YPos), Canvas.Font, command_color);
 			YPos += YL;
 		}
 	}
+}
+
+exec function HideAllMenus()
+{
+	PPawn.bInMenu = false;
+	bShowMorphSelectionMenu = false;
 }
 
 DefaultProperties
 {
 	bShowMorphSelectionMenu=false
 	CurrentIndex=0
-	Commands(0)="Replace First Form"
-	Commands(1)="Replace Second Form"
 	currentForm = 0;
 }

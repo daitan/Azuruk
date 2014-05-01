@@ -1,8 +1,15 @@
 class BehemothAIPawn extends AzurukPawn
 	placeable;
 
+event PostBeginPlay()
+{
+	super.PostBeginPlay();
+	defaultFeatures.CreatureName = "Behemoth";
+}
+
 DefaultProperties
 {
+	PawnName="Behemoth"
 	defaultMoveType = M_LargeWalking
 
 	RotationRate=(Pitch=20000,Yaw=60000,Roll=20000)

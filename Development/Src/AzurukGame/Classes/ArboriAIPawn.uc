@@ -30,13 +30,13 @@ DefaultProperties
 	CylinderComponent=CollisionCylinder
 	Components.Add(CollisionCylinder)
 
-    Begin Object Class=SkeletalMeshComponent Name=PawnSkeletalMesh
-		SkeletalMesh=SkeletalMesh''
-		AnimSets[0]=AnimSet''
-		AnimTreeTemplate=AnimTree''
-    End Object
-    Mesh=PawnSkeletalMesh
-    Components.Add(PawnSkeletalMesh)
+  //  Begin Object Class=SkeletalMeshComponent Name=PawnSkeletalMesh
+		//SkeletalMesh=SkeletalMesh''
+		//AnimSets[0]=AnimSet''
+		//AnimTreeTemplate=AnimTree''
+  //  End Object
+  //  Mesh=PawnSkeletalMesh
+  //  Components.Add(PawnSkeletalMesh)
 
 	InventoryManagerClass=class'AzurukGame.CreatureInventoryManager'
 	ControllerClass=class'AzurukGame.ArboriAIController'

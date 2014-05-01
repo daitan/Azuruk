@@ -12,12 +12,12 @@ var() const Name SwordHandSocketName;
 /*
  * Variables
  */
-var PawnFeatures morphSets[2], currentFeatures;
+var PawnFeatures morphSets[4], currentFeatures;
 var Pawn interactingPawn, lastPawnTouched;
-var int MorphCurrentForm, numStoredMorphs;
+var int MorphCurrentForm, numStoredMorphs, IndexFirstForm, IndexSecondForm;
 var float MorphEnergyDrainRate, MorphEnergyRechargeRate, UpdateRate,
 		  MorphEnergyMax, MorphEnergyCurrent[2], MorphEnergyRechargeDelay;
-var bool bNoEmptyMorphs, bInArboriBossRegion;
+var bool bNoEmptyMorphs, bInMenu, bInArboriBossRegion;
 
 /*
  * AzurukPlayerPawn Initializations
@@ -25,7 +25,7 @@ var bool bNoEmptyMorphs, bInArboriBossRegion;
 function PostBeginPlay()
 {
 	super.PostBeginPlay();
-
+	defaultFeatures.CreatureName = "No morph";
 	currentFeatures = defaultFeatures;
 }
 
@@ -46,7 +46,10 @@ simulated function name GetDefaultCameraMode( PlayerController RequestedBy )
  */
 function SetMorphSet(int index)
 {
-	if (morphSets[index].pawnMesh == none && MorphEnergyCurrent[index] != 0)
+	if (index < 0) {
+		`log("No Morph Found");
+	}
+	else if (morphSets[index].pawnMesh == none && MorphEnergyCurrent[index] != 0)
 	{
 		`log("Can't Morph");
 	}
@@ -76,7 +79,7 @@ function SetMorphSet(int index)
 		} else if (MorphCurrentForm == 2) {
 			StopMorphFormTwo();
 		}
-		GBA_DefaultFormTransform();
+		DefaultFormTransform();
 	}
 }
 
@@ -99,6 +102,13 @@ function bool GetMorphSet()
 				{
 					morphSets[i] = returnPawnFeatures(interactingPawn);
 					numStoredMorphs += 1;
+					if (IndexFirstForm == -1) {
+						IndexFirstForm = i;
+					} 
+					else if (IndexSecondForm == -1)
+					{
+						IndexSecondForm = i;
+					}
 					if (numStoredMorphs == ArrayCount(morphSets)) {
 						bNoEmptyMorphs = true;
 					}
@@ -132,18 +142,46 @@ function SetMorph(Pawn P, int index) {
 	}
 }
 
-exec function GBA_DefaultFormTransform()
+function array<string> GetCurrentCreatureNames()
+{
+	local array<string> names;
+	local int i;
+
+	for (i = 0; i < ArrayCount(morphSets); i++)
+	{
+		//if (morphSets[i].CreatureName == none) {
+		//	names[i] = "No DNA";
+		//}
+		//else
+		//{
+			names[i] = morphSets[i].CreatureName;
+		//}
+	}
+
+	return names;
+}
+
+exec function ChangeFirstMorph()
+{
+	if (AzurukHUD(PlayerController(Controller).myHUD).bShowMorphSelectionMenu) {
+		IndexFirstForm = AzurukHUD(PlayerController(Controller).myHUD).CurrentIndex;
+	}
+}
+
+exec function ChangeSecondMorph()
+{
+	if (AzurukHUD(PlayerController(Controller).myHUD).bShowMorphSelectionMenu) {
+		IndexSecondForm = AzurukHUD(PlayerController(Controller).myHUD).CurrentIndex;
+	}
+}
+
+exec function DefaultFormTransform()
 {
 	MorphCurrentForm = 0;
 	currentFeatures = defaultFeatures;
 	Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
 	Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
 	Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
-}
-
-function int GetMorphCurrentForm()
-{
-	return MorphCurrentForm;
 }
 
 function float GetMorphEnergyCurrent(int morph)
@@ -209,7 +247,7 @@ function StartRechargeFormOne()
 
 function StopMorphFormOne()
 {
-	GBA_DefaultFormTransform();
+	DefaultFormTransform();
 	StopDrainFormOne();
 	SetTimer(MorphEnergyRechargeDelay, false, 'StartRechargeFormOne');
 }
@@ -266,7 +304,7 @@ function StartRechargeFormTwo()
 
 function StopMorphFormTwo()
 {
-	GBA_DefaultFormTransform();
+	DefaultFormTransform();
 	StopDrainFormTwo();
 	SetTimer(MorphEnergyRechargeDelay, false, 'StartRechargeFormTwo');
 }
@@ -311,7 +349,12 @@ defaultproperties
 	UpdateRate=0.01
 
 	bNoEmptyMorphs=false
+	bInMenu=false
 	numStoredMorphs=0
+	IndexFirstForm=-1
+	IndexSecondForm=-1
+
+	bInArboriBossRegion=false
 	
 	InventoryManagerClass=class'AzurukGame.AzurukInventoryManager'
 

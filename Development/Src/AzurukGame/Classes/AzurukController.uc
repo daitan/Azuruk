@@ -6,12 +6,16 @@ class AzurukController extends PlayerController
  */
 exec function CamZoomIn()
 {
-	AzurukCamera(PlayerCamera).ZoomIn();
+	if (!AzurukPlayerPawn(GetALocalPlayerController().Pawn).bInMenu) {
+		AzurukCamera(PlayerCamera).ZoomIn();
+	}
 }
 
 exec function CamZoomOut()
 {
-	AzurukCamera(PlayerCamera).ZoomOut();
+	if (!AzurukPlayerPawn(GetALocalPlayerController().Pawn).bInMenu) {
+		AzurukCamera(PlayerCamera).ZoomOut();
+	}
 }
 
 /*
@@ -19,12 +23,16 @@ exec function CamZoomOut()
  */
 exec function TransformOne()
 {
-	AzurukPlayerPawn(Pawn).SetMorphSet(0);
+	if (!AzurukPlayerPawn(GetALocalPlayerController().Pawn).bInMenu) {
+		AzurukPlayerPawn(Pawn).SetMorphSet(AzurukPlayerPawn(GetALocalPlayerController().Pawn).IndexFirstForm);
+	}
 }
 
 exec function TransformTwo()
 {
-	AzurukPlayerPawn(Pawn).SetMorphSet(1);
+	if (!AzurukPlayerPawn(GetALocalPlayerController().Pawn).bInMenu) {
+		AzurukPlayerPawn(Pawn).SetMorphSet(AzurukPlayerPawn(GetALocalPlayerController().Pawn).IndexSecondForm);
+	}
 }
 
 defaultproperties
