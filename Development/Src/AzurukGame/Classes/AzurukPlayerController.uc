@@ -4,11 +4,6 @@ class AzurukPlayerController extends AzurukController;
  * Variables
  */
 
-// Double Click Variables
-var eDoubleClickDir tempClick;
-var float   clickTime;
-var bool    bFirstKeyPress;
-
 // Behemoth Variables
 var float   defaultGroundSpeed, 
 			chargeSpeed, speedMultiplier, maxSpeed,

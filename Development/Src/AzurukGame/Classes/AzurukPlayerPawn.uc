@@ -17,7 +17,7 @@ var Pawn interactingPawn, lastPawnTouched;
 var int MorphCurrentForm, numStoredMorphs;
 var float MorphEnergyDrainRate, MorphEnergyRechargeRate, UpdateRate,
 		  MorphEnergyMax, MorphEnergyCurrent[2], MorphEnergyRechargeDelay;
-var bool bNoEmptyMorphs;
+var bool bNoEmptyMorphs, bInArboriBossRegion;
 
 /*
  * AzurukPlayerPawn Initializations
@@ -261,7 +261,7 @@ function StopDrainFormTwo()
 
 function StartRechargeFormTwo()
 {
-	SetTimer(UpdateRate, true, 'RechargeMorphEnergyFormOne');
+	SetTimer(UpdateRate, true, 'RechargeMorphEnergyFormTwo');
 }
 
 function StopMorphFormTwo()
