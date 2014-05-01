@@ -4,14 +4,21 @@ var Pawn PPawn;
 
 auto state Idle
 {
-	event SeePlayer(Pawn P)
+	event SeePlayer(Pawn Seen)
 	{
+		super.SeePlayer(Seen);
 		PPawn = GetALocalPlayerController().Pawn;
-		GotoState('FindShootableObject');
+		GotoState('Charge');
 	}
 Begin:
 	PPawn = none;
 }
+
+state Charge
+{
+}
+
+
 
 DefaultProperties
 {
