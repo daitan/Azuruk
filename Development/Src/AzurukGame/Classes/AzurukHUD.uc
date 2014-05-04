@@ -152,5 +152,4 @@ DefaultProperties
 {
 	bShowMorphSelectionMenu=false
 	CurrentIndex=0
-	currentForm = 0;
 }

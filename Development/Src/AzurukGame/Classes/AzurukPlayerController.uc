@@ -67,8 +67,11 @@ state PlayerWalking
 
 			switch (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType)
 			{
-				case M_LargeWalking:
-					GotoState('LargeWalking');					
+				case M_CreatureWalking:
+					GotoState('CreatureWalking');
+					break;
+				case M_Behemoth:
+					GotoState('Behemoth');					
 					break;
 			}
 
@@ -114,21 +117,67 @@ state PlayerWalking
 begin:
 }
 
-state LargeWalking
+state CreatureWalking
+{
+	function PlayerMove( float DeltaTime )
+	{
+		local vector			X,Y,Z, NewAccel;
+		local eDoubleClickDir	DoubleClickMove;
+		local rotator			OldRotation;
+
+		if( Pawn == None )
+		{
+			GotoState('Dead');
+		}
+		else
+		{
+			GetAxes(Pawn.Rotation,X,Y,Z);
+
+			// If pawnMoveType is default
+			if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType == M_PlayerWalking)
+			{
+				GotoState(Pawn.LandMovementState);					
+			}
+
+			// Update acceleration.
+			NewAccel = PlayerInput.aForward * X + PlayerInput.aStrafe * Y;
+			NewAccel.Z	= 0;
+			NewAccel = Pawn.AccelRate * Normal(NewAccel);
+
+			if (IsLocalPlayerController())
+			{
+				AdjustPlayerWalkingMoveAccel(NewAccel);
+			}
+
+			DoubleClickMove = PlayerInput.CheckForDoubleClickMove( DeltaTime/WorldInfo.TimeDilation );
+
+			// Update rotation.
+			OldRotation = Rotation;
+			UpdateRotation( DeltaTime );
+
+			if( Role < ROLE_Authority ) // then save this move and replicate it
+			{
+				ReplicateMove(DeltaTime, NewAccel, DoubleClickMove, OldRotation - Rotation);
+			}
+			else
+			{
+				ProcessMove(DeltaTime, NewAccel, DoubleClickMove, OldRotation - Rotation);
+			}
+		}
+	}
+
+begin:
+}
+
+state Behemoth extends CreatureWalking
 {
 	function PlayerMove(float DeltaTime)
 	{
 		local vector			X,Y,Z, NewAccel;
-		local rotator			OldRotation;
-		local eDoubleClickDir	DoubleClickMove;
 		local float             tGroundSpeed;
-		
-		// If pawnMoveType is default
-		if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType == M_DefaultWalking)
-		{
-			GotoState(Pawn.LandMovementState);					
-		}
 
+		super.PlayerMove(DeltaTime);
+		
 		if ( Pawn != None )
 		{
 			GetAxes(Pawn.Rotation,X,Y,Z);
@@ -157,24 +206,6 @@ state LargeWalking
 			// Update acceleration.
 			NewAccel.Z	= 0;
 			NewAccel = Pawn.AccelRate * Normal(NewAccel);
-
-			if (IsLocalPlayerController())
-			{
-				AdjustPlayerWalkingMoveAccel(NewAccel);
-			}
-
-			// Update rotation.
-			OldRotation = Rotation;
-			UpdateRotation( DeltaTime );
-
-			if( Role < ROLE_Authority ) // then save this move and replicate it
-			{
-				ReplicateMove(DeltaTime, NewAccel, DoubleClickMove, OldRotation - Rotation);
-			}
-			else
-			{
-				ProcessMove(DeltaTime, NewAccel, DoubleClickMove, OldRotation - Rotation);
-			}
 		}
 	}
 
@@ -205,55 +236,11 @@ state LargeWalking
 begin:
 }
 
-//state ExampleState
-//{
-//	function PlayerMove(float DeltaTime)
-//	{
-//		local vector			X,Y,Z, NewAccel;
-//		local rotator			OldRotation;
-//		local eDoubleClickDir	DoubleClickMove;
-
-//		if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType == M_DefaultWalking)
-//		{
-//			GotoState(Pawn.LandMovementState);					
-//		}
-
-//		if ( Pawn != None )
-//		{
-//			GetAxes(Pawn.Rotation,X,Y,Z);
-
-//			// Update acceleration.
-//			NewAccel = PlayerInput.aForward * X + PlayerInput.aStrafe * Y;
-//			NewAccel.Z	= 0;
-//			NewAccel = Pawn.AccelRate * Normal(NewAccel);
-
-//			if (IsLocalPlayerController())
-//			{
-//				AdjustPlayerWalkingMoveAccel(NewAccel);
-//			}
-
-//			// Update rotation.
-//			OldRotation = Rotation;
-//			UpdateRotation( DeltaTime );
-
-//			if( Role < ROLE_Authority ) // then save this move and replicate it
-//			{
-//				ReplicateMove(DeltaTime, NewAccel, DoubleClickMove, OldRotation - Rotation);
-//			}
-//			else
-//			{
-//				ProcessMove(DeltaTime, NewAccel, DoubleClickMove, OldRotation - Rotation);
-//			}
-//		}
-//	}
-//begin:
-//}
-
 function ProcessViewRotation( float DeltaTime, out Rotator out_ViewRotation, Rotator DeltaRot )
 {
 	switch (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType)
 	{
-		case M_LargeWalking:
+		case M_Behemoth:
 			if (Pawn.GroundSpeed > chargeSpeed)
 			{
 				DeltaRot.Yaw /= 20;
@@ -265,8 +252,6 @@ function ProcessViewRotation( float DeltaTime, out Rotator out_ViewRotation, Rot
 
 defaultproperties
 {
-	clickTime=0.25
-
 	chargeDamage = 5
 	hitMomentum = 1000
 	

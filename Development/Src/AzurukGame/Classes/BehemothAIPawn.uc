@@ -9,10 +9,7 @@ event PostBeginPlay()
 
 DefaultProperties
 {
-	PawnName="Behemoth"
-	defaultMoveType = M_LargeWalking
-
-	RotationRate=(Pitch=20000,Yaw=60000,Roll=20000)
+	defaultMoveType = M_Behemoth
 
 	Begin Object Name=CollisionCylinder
 		CollisionRadius=+30.000000

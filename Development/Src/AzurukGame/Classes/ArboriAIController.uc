@@ -38,7 +38,7 @@ state Active
 		}
 		else if (temp_dist > MeleeDistance)
 		{
-			if (PPawn.currentFeatures.pawnMoveType == M_Flying)
+			if (PPawn.currentFeatures.pawnMoveType == M_CreatureFlying)
 			{
 				GotoState('ThrowRock');
 			}

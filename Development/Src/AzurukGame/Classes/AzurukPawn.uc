@@ -4,9 +4,10 @@ class AzurukPawn extends GamePawn
 
 enum MoveType
 {
-	M_Flying,
-	M_DefaultWalking,
-	M_LargeWalking,
+	M_PlayerWalking,
+	M_CreatureWalking,
+	M_CreatureFlying,
+	M_Behemoth,
 };
 
 /*
@@ -272,7 +273,7 @@ Begin:
 
 defaultproperties
 {
-	defaultMoveType = M_DefaultWalking
+	defaultMoveType = M_PlayerWalking
 
 	DodgeSpeed = 1200
 	DodgeDuration = 0.3

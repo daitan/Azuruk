@@ -355,6 +355,8 @@ defaultproperties
 	IndexSecondForm=-1
 
 	bInArboriBossRegion=false
+
+	defaultMoveType = M_PlayerWalking
 	
 	InventoryManagerClass=class'AzurukGame.AzurukInventoryManager'
 
