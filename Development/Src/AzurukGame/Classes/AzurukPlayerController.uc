@@ -3,12 +3,12 @@ class AzurukPlayerController extends AzurukController;
 /*
  * Variables
  */
+var float stunnedTime;
 
 // Behemoth Variables
 var float   defaultGroundSpeed, 
 			chargeSpeed, speedMultiplier, maxSpeed,
 			hitMomentum;
-var int     chargeDamage;
 
 /*
  * PerformedUseAction Override 
@@ -24,10 +24,11 @@ function bool PerformedUseAction()
 
 state Stunned
 {
-	event Tick(float DeltaTime)
+	event BeginState(name PreviousStateName)
 	{
-		`log("Stunned");
+		GotoState(PreviousStateName);
 	}
+Begin:
 }
 
 /*
@@ -171,25 +172,24 @@ begin:
 
 state Behemoth extends CreatureWalking
 {
-	function bool isCharging()
-	{
-		return Pawn.GroundSpeed > chargeSpeed;
-	}
-
 	function PlayerMove(float DeltaTime)
 	{
 		local vector			X,Y,Z, NewAccel;
+		local eDoubleClickDir	DoubleClickMove;
+		local rotator			OldRotation;
 		local float             tGroundSpeed;
-
-		super.PlayerMove(DeltaTime);
 		
 		if ( Pawn != None )
 		{
 			GetAxes(Pawn.Rotation,X,Y,Z);
 
-			tGroundSpeed = Pawn.GroundSpeed;
+			// If pawnMoveType is default
+			if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType == M_PlayerWalking)
+			{
+				GotoState(Pawn.LandMovementState);					
+			}
 
-			NewAccel = PlayerInput.aForward * X + PlayerInput.aStrafe * Y;
+			tGroundSpeed = Pawn.GroundSpeed;
 			
 			if (PlayerInput.aForward > 0)
 			{
@@ -211,6 +211,26 @@ state Behemoth extends CreatureWalking
 			// Update acceleration.
 			NewAccel.Z	= 0;
 			NewAccel = Pawn.AccelRate * Normal(NewAccel);
+
+			if (IsLocalPlayerController())
+			{
+				AdjustPlayerWalkingMoveAccel(NewAccel);
+			}
+
+			DoubleClickMove = PlayerInput.CheckForDoubleClickMove( DeltaTime/WorldInfo.TimeDilation );
+
+			// Update rotation.
+			OldRotation = Rotation;
+			UpdateRotation( DeltaTime );
+
+			if( Role < ROLE_Authority ) // then save this move and replicate it
+			{
+				ReplicateMove(DeltaTime, NewAccel, DoubleClickMove, OldRotation - Rotation);
+			}
+			else
+			{
+				ProcessMove(DeltaTime, NewAccel, DoubleClickMove, OldRotation - Rotation);
+			}
 		}
 	}
 
@@ -228,7 +248,7 @@ function ProcessViewRotation( float DeltaTime, out Rotator out_ViewRotation, Rot
 		case M_Behemoth:
 			if (Pawn.GroundSpeed > chargeSpeed)
 			{
-				DeltaRot.Yaw /= 20;
+				DeltaRot.Yaw /= 30;
 			}			
 			break;
 	}
@@ -237,9 +257,9 @@ function ProcessViewRotation( float DeltaTime, out Rotator out_ViewRotation, Rot
 
 defaultproperties
 {
+	stunnedTime=3.0
+
 	// Behemoth Default Values
-	chargeDamage = 5
-	hitMomentum = 1000
 	defaultGroundSpeed= 00600.000000
 	speedMultiplier=00005.000000
 	chargeSpeed=00700.000000

@@ -18,6 +18,12 @@ var float MorphEnergyDrainRate, MorphEnergyRechargeRate, UpdateRate,
 		  MorphEnergyMax, MorphEnergyCurrent[2], MorphEnergyRechargeDelay;
 var bool bNoEmptyMorphs, bInMenu, bInArboriBossRegion;
 
+// Dodging
+var vector DodgeVelocity;
+var int DodgeSpeed;
+var bool isDodging;
+var float dodgeDuration;
+
 /*
  * AzurukPlayerPawn Initializations
  */
@@ -452,8 +458,13 @@ event UnTouch(Actor Other)
 
 defaultproperties
 {
-	MorphCurrentForm = 0;
+	// Dodging Defaults
+	DodgeSpeed = 1200
+	DodgeDuration = 0.3
+	isDodging = false
 
+	// Morph Bar Defaults
+	MorphCurrentForm = 0;
 	MorphEnergyMax=100.0
 	MorphEnergyDrainRate=0.1
 	MorphEnergyRechargeRate=0.2
@@ -463,7 +474,8 @@ defaultproperties
 	MorphEnergyCurrent[1]=100.0
 
 	UpdateRate=0.01
-
+	
+	// Morph Menu Defaults
 	bNoEmptyMorphs=false
 	bInMenu=false
 	numStoredMorphs=0

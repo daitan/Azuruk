@@ -29,17 +29,15 @@ Struct PawnFeatures
 var() const DynamicLightEnvironmentComponent LightEnvironment;
 
 // spawn location
-var vector spawnLoc;
+var vector          spawnLoc;
 
 // PawnFeatures Default Features Object
-var PawnFeatures defaultFeatures, currentFeatures;
-var MoveType defaultMoveType;
+var PawnFeatures    defaultFeatures, currentFeatures;
+var MoveType        defaultMoveType;
 
-// Dodging
-var vector DodgeVelocity;
-var int DodgeSpeed;
-var bool isDodging;
-var float dodgeDuration;
+// Behemoth Variables
+var int             chargeDamage;
+var float           hitMomentum;
 
 /*
  * Initialisation
@@ -67,19 +65,17 @@ function PawnFeatures returnPawnFeatures(Pawn Other)
 event Bump(Actor Other, PrimitiveComponent OtherComp, Vector HitNormal)
 {
 	local Pawn otherPawn;
+	local Vector Momentum;
 
 	super.Bump(Other, OtherComp, HitNormal);
 
 	otherPawn = Pawn(Other);
-	
-	switch (self.currentFeatures.pawnMoveType)
+
+	if (otherPawn != none && self.currentFeatures.pawnMoveType == M_Behemoth && GroundSpeed > 700)
 	{
-		case M_Behemoth:
-			if (!(AzurukPlayerController(Controller) == none || BehemothAIController(Controller) == none))
-			{
-				//otherPawn.TakeDamage(
-			}			
-			break;
+		Momentum = Normal(otherPawn.Location - Location) * hitMomentum;
+		otherPawn.TakeDamage(chargeDamage, Instigator.Controller, HitNormal, Momentum, class'DmgType_Crushed');
+		otherPawn.Controller.GotoState('Stunned');
 	}
 }
 
@@ -183,6 +179,10 @@ Begin:
 
 defaultproperties
 {
+	// Behemoth Defaults
+	chargeDamage = 5
+	hitMomentum = 500000.0
+
 	defaultMoveType = M_PlayerWalking
 
 	Components.Remove(Sprite)
@@ -212,8 +212,4 @@ defaultproperties
 	CollisionComponent=CollisionCylinder
 	CylinderComponent=CollisionCylinder
 	Components.Add(CollisionCylinder)
-
-	DodgeSpeed = 1200
-	DodgeDuration = 0.3
-	isDodging = false
 }
