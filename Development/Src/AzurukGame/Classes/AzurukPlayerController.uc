@@ -171,6 +171,11 @@ begin:
 
 state Behemoth extends CreatureWalking
 {
+	function bool isCharging()
+	{
+		return Pawn.GroundSpeed > chargeSpeed;
+	}
+
 	function PlayerMove(float DeltaTime)
 	{
 		local vector			X,Y,Z, NewAccel;
@@ -209,26 +214,6 @@ state Behemoth extends CreatureWalking
 		}
 	}
 
-	event Bump(Actor Other, PrimitiveComponent OtherComp, Vector HitNormal)
-	{
-		local Pawn otherPawn;
-		local Vector Momentum;
-
-		otherPawn = Pawn(Other);
-
-		`log(Other);
-
-		if (otherPawn != None && otherPawn.Health > 0 && Pawn.GroundSpeed > chargeSpeed)
-		{
-			Momentum = Normal(Location - otherPawn.Location) * hitMomentum;
-			otherPawn.TakeDamage(chargeDamage, none, HitNormal, Momentum, class'DmgType_Crushed');
-		}
-		else
-		{
-			GotoState('Stunned');
-		}
-	}
-
 	event EndState(name NextStateName)
 	{
 		Pawn.GroundSpeed = defaultGroundSpeed;
@@ -252,9 +237,9 @@ function ProcessViewRotation( float DeltaTime, out Rotator out_ViewRotation, Rot
 
 defaultproperties
 {
+	// Behemoth Default Values
 	chargeDamage = 5
 	hitMomentum = 1000
-	
 	defaultGroundSpeed= 00600.000000
 	speedMultiplier=00005.000000
 	chargeSpeed=00700.000000
