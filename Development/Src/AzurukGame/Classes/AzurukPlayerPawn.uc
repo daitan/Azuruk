@@ -492,6 +492,9 @@ defaultproperties
 
 	Begin Object Class=SkeletalMeshComponent Name=PawnSkeletalMesh
 		SkeletalMesh=SkeletalMesh'AzurukContent.SkeletalMeshes.SK_Crowd_Robot'
+		//AnimSets[0]=
+		//AnimTreeTemplate=
+		//PhysicsAsset=
         LightEnvironment=PawnLightEnvironment
 		BlockActors=true
         CollideActors=true

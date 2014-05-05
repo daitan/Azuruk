@@ -89,6 +89,72 @@ event Bump(Actor Other, PrimitiveComponent OtherComp, Vector HitNormal)
 	}
 }
 
+//simulated function PlayDying(class<DamageType> DamageType, vector HitLoc)
+//{
+//	local vector ApplyImpulse, ShotDir;
+  
+//	bReplicateMovement = false;
+//	bTearOff = true;
+//	Velocity += TearOffMomentum;
+//	SetDyingPhysics();
+//	bPlayedDeath = true;
+//	HitDamageType = DamageType; // these are replicated to other clients
+//	TakeHitLocation = HitLoc;
+//	if ( WorldInfo.NetMode == NM_DedicatedServer )
+//	{
+//		GotoState('Dying');
+//		return;
+//	}
+//	Mesh.SetBlockRigidBody(true);
+//	InitRagdoll();
+//	mesh.MinDistFactorForKinematicUpdate = 0.f;
+  
+//	if (Physics == PHYS_RigidBody)
+//	{
+//		//@note: Falling instead of None so Velocity/Acceleration don't get cleared
+//		setPhysics(PHYS_Falling);
+//	}
+//	PreRagdollCollisionComponent = CollisionComponent;
+//	CollisionComponent = Mesh;
+//	if( Mesh.bNotUpdatingKinematicDueToDistance )
+//	{
+//		Mesh.ForceSkelUpdate();
+//		Mesh.UpdateRBBonesFromSpaceBases(TRUE, TRUE);
+//	}
+//	if( Mesh.PhysicsAssetInstance != None )
+//	{
+//		Mesh.PhysicsAssetInstance.SetAllBodiesFixed(FALSE);
+//		Mesh.SetRBChannel(RBCC_Pawn);
+//		Mesh.SetRBCollidesWithChannel(RBCC_Default,TRUE);
+//		Mesh.SetRBCollidesWithChannel(RBCC_Pawn,TRUE);
+//		Mesh.SetRBCollidesWithChannel(RBCC_Vehicle,TRUE);
+//		Mesh.SetRBCollidesWithChannel(RBCC_Untitled3,FALSE);
+//		Mesh.SetRBCollidesWithChannel(RBCC_BlockingVolume,TRUE);
+//		Mesh.ForceSkelUpdate();
+//		Mesh.UpdateRBBonesFromSpaceBases(TRUE, TRUE);
+//		Mesh.PhysicsWeight = 1.0;
+//		Mesh.bUpdateKinematicBonesFromAnimation=false;
+//		// mesh.bPauseAnims=True;
+//		Mesh.SetRBLinearVelocity(Velocity, false);
+//		mesh.SetTranslation(vect(0,0,1) * 6);
+//		Mesh.ScriptRigidBodyCollisionThreshold = MaxFallSpeed;
+//		Mesh.SetNotifyRigidBodyCollision(true);
+//		Mesh.WakeRigidBody();
+//	}
+//	if( TearOffMomentum != vect(0,0,0) )
+//	{
+//		ShotDir = normal(TearOffMomentum);
+//		ApplyImpulse = ShotDir * DamageType.default.KDamageImpulse;
+//		// If not moving downwards - give extra upward kick
+//		if ( Velocity.Z > -10 )
+//		{
+//			ApplyImpulse += Vect(0,0,1)*2;
+//		}
+//		Mesh.AddImpulse(ApplyImpulse, TakeHitLocation,, true);
+//	}
+//	GotoState('Dying');
+//}
+
 State Dying
 {
 ignores Bump, HitWall, HeadVolumeChange, PhysicsVolumeChange, Falling, BreathTimer, FellOutOfWorld;
