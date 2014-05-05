@@ -3,12 +3,12 @@ class AzurukPlayerController extends AzurukController;
 /*
  * Variables
  */
+var float stunnedTime;
 
 // Behemoth Variables
 var float   defaultGroundSpeed, 
 			chargeSpeed, speedMultiplier, maxSpeed,
 			hitMomentum;
-var int     chargeDamage;
 
 /*
  * PerformedUseAction Override 
@@ -24,10 +24,11 @@ function bool PerformedUseAction()
 
 state Stunned
 {
-	event Tick(float DeltaTime)
+	event BeginState(name PreviousStateName)
 	{
-		`log("Stunned");
+		GotoState(PreviousStateName);
 	}
+Begin:
 }
 
 /*
@@ -67,8 +68,11 @@ state PlayerWalking
 
 			switch (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType)
 			{
-				case M_LargeWalking:
-					GotoState('LargeWalking');					
+				case M_CreatureWalking:
+					GotoState('CreatureWalking');
+					break;
+				case M_Behemoth:
+					GotoState('Behemoth');					
 					break;
 			}
 
@@ -114,28 +118,78 @@ state PlayerWalking
 begin:
 }
 
-state LargeWalking
+state CreatureWalking
+{
+	function PlayerMove( float DeltaTime )
+	{
+		local vector			X,Y,Z, NewAccel;
+		local eDoubleClickDir	DoubleClickMove;
+		local rotator			OldRotation;
+
+		if( Pawn == None )
+		{
+			GotoState('Dead');
+		}
+		else
+		{
+			GetAxes(Pawn.Rotation,X,Y,Z);
+
+			// If pawnMoveType is default
+			if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType == M_PlayerWalking)
+			{
+				GotoState(Pawn.LandMovementState);					
+			}
+
+			// Update acceleration.
+			NewAccel = PlayerInput.aForward * X + PlayerInput.aStrafe * Y;
+			NewAccel.Z	= 0;
+			NewAccel = Pawn.AccelRate * Normal(NewAccel);
+
+			if (IsLocalPlayerController())
+			{
+				AdjustPlayerWalkingMoveAccel(NewAccel);
+			}
+
+			DoubleClickMove = PlayerInput.CheckForDoubleClickMove( DeltaTime/WorldInfo.TimeDilation );
+
+			// Update rotation.
+			OldRotation = Rotation;
+			UpdateRotation( DeltaTime );
+
+			if( Role < ROLE_Authority ) // then save this move and replicate it
+			{
+				ReplicateMove(DeltaTime, NewAccel, DoubleClickMove, OldRotation - Rotation);
+			}
+			else
+			{
+				ProcessMove(DeltaTime, NewAccel, DoubleClickMove, OldRotation - Rotation);
+			}
+		}
+	}
+
+begin:
+}
+
+state Behemoth extends CreatureWalking
 {
 	function PlayerMove(float DeltaTime)
 	{
 		local vector			X,Y,Z, NewAccel;
-		local rotator			OldRotation;
 		local eDoubleClickDir	DoubleClickMove;
+		local rotator			OldRotation;
 		local float             tGroundSpeed;
 		
-		// If pawnMoveType is default
-		if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType == M_DefaultWalking)
-		{
-			GotoState(Pawn.LandMovementState);					
-		}
-
 		if ( Pawn != None )
 		{
 			GetAxes(Pawn.Rotation,X,Y,Z);
 
-			tGroundSpeed = Pawn.GroundSpeed;
+			// If pawnMoveType is default
+			if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType == M_PlayerWalking)
+			{
+				GotoState(Pawn.LandMovementState);					
+			}
 
-			NewAccel = PlayerInput.aForward * X + PlayerInput.aStrafe * Y;
+			tGroundSpeed = Pawn.GroundSpeed;
 			
 			if (PlayerInput.aForward > 0)
 			{
@@ -163,6 +217,8 @@ state LargeWalking
 				AdjustPlayerWalkingMoveAccel(NewAccel);
 			}
 
+			DoubleClickMove = PlayerInput.CheckForDoubleClickMove( DeltaTime/WorldInfo.TimeDilation );
+
 			// Update rotation.
 			OldRotation = Rotation;
 			UpdateRotation( DeltaTime );
@@ -178,26 +234,6 @@ state LargeWalking
 		}
 	}
 
-	event Bump(Actor Other, PrimitiveComponent OtherComp, Vector HitNormal)
-	{
-		local Pawn otherPawn;
-		local Vector Momentum;
-
-		otherPawn = Pawn(Other);
-
-		`log(Other);
-
-		if (otherPawn != None && otherPawn.Health > 0 && Pawn.GroundSpeed > chargeSpeed)
-		{
-			Momentum = Normal(Location - otherPawn.Location) * hitMomentum;
-			otherPawn.TakeDamage(chargeDamage, none, HitNormal, Momentum, class'DmgType_Crushed');
-		}
-		else
-		{
-			GotoState('Stunned');
-		}
-	}
-
 	event EndState(name NextStateName)
 	{
 		Pawn.GroundSpeed = defaultGroundSpeed;
@@ -205,58 +241,14 @@ state LargeWalking
 begin:
 }
 
-//state ExampleState
-//{
-//	function PlayerMove(float DeltaTime)
-//	{
-//		local vector			X,Y,Z, NewAccel;
-//		local rotator			OldRotation;
-//		local eDoubleClickDir	DoubleClickMove;
-
-//		if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType == M_DefaultWalking)
-//		{
-//			GotoState(Pawn.LandMovementState);					
-//		}
-
-//		if ( Pawn != None )
-//		{
-//			GetAxes(Pawn.Rotation,X,Y,Z);
-
-//			// Update acceleration.
-//			NewAccel = PlayerInput.aForward * X + PlayerInput.aStrafe * Y;
-//			NewAccel.Z	= 0;
-//			NewAccel = Pawn.AccelRate * Normal(NewAccel);
-
-//			if (IsLocalPlayerController())
-//			{
-//				AdjustPlayerWalkingMoveAccel(NewAccel);
-//			}
-
-//			// Update rotation.
-//			OldRotation = Rotation;
-//			UpdateRotation( DeltaTime );
-
-//			if( Role < ROLE_Authority ) // then save this move and replicate it
-//			{
-//				ReplicateMove(DeltaTime, NewAccel, DoubleClickMove, OldRotation - Rotation);
-//			}
-//			else
-//			{
-//				ProcessMove(DeltaTime, NewAccel, DoubleClickMove, OldRotation - Rotation);
-//			}
-//		}
-//	}
-//begin:
-//}
-
 function ProcessViewRotation( float DeltaTime, out Rotator out_ViewRotation, Rotator DeltaRot )
 {
 	switch (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType)
 	{
-		case M_LargeWalking:
+		case M_Behemoth:
 			if (Pawn.GroundSpeed > chargeSpeed)
 			{
-				DeltaRot.Yaw /= 20;
+				DeltaRot.Yaw /= 30;
 			}			
 			break;
 	}
@@ -265,11 +257,9 @@ function ProcessViewRotation( float DeltaTime, out Rotator out_ViewRotation, Rot
 
 defaultproperties
 {
-	clickTime=0.25
+	stunnedTime=3.0
 
-	chargeDamage = 5
-	hitMomentum = 1000
-	
+	// Behemoth Default Values
 	defaultGroundSpeed= 00600.000000
 	speedMultiplier=00005.000000
 	chargeSpeed=00700.000000

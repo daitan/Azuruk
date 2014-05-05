@@ -14,7 +14,7 @@ class ArboriAIPawn extends AzurukPawn
 
 DefaultProperties
 {
-	defaultMoveType = M_DefaultWalking
+	defaultMoveType = M_CreatureWalking
 
 	RotationRate=(Pitch=20000,Yaw=60000,Roll=20000)
 

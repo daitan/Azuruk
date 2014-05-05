@@ -1,7 +1,7 @@
 class CreatureAIController extends AIController;
 
 var SkeletalMeshComponent SMC;
-var float stunTime;
+var float stunnedTime;
 
 event Possess(Pawn inPawn, bool bVehicleTransition)
 {
@@ -61,10 +61,9 @@ state Stunned
 		GotoState(PreviousStateName);
 	}
 Begin:
-	Sleep(stunTime);
 }
 
 DefaultProperties
 {
-	stunTime = 3.0
+	stunnedTime = 3.0
 }

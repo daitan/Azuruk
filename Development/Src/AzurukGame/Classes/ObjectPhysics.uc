@@ -1,6 +1,6 @@
 class ObjectPhysics extends KActorSpawnable;
 
-var bool bFrankUsable;
+var() bool bFrankUsable;
 
 simulated event PostBeginPlay()
 {

@@ -4,9 +4,10 @@ class AzurukPawn extends GamePawn
 
 enum MoveType
 {
-	M_Flying,
-	M_DefaultWalking,
-	M_LargeWalking,
+	M_PlayerWalking,
+	M_CreatureWalking,
+	M_CreatureFlying,
+	M_Behemoth,
 };
 
 /*
@@ -25,19 +26,18 @@ Struct PawnFeatures
 /*
  * Variables
  */
+var() const DynamicLightEnvironmentComponent LightEnvironment;
 
 // spawn location
-var vector spawnLoc;
+var vector          spawnLoc;
 
 // PawnFeatures Default Features Object
-var PawnFeatures defaultFeatures;
-var MoveType defaultMoveType;
+var PawnFeatures    defaultFeatures, currentFeatures;
+var MoveType        defaultMoveType;
 
-// Dodging
-var vector DodgeVelocity;
-var int DodgeSpeed;
-var bool isDodging;
-var float dodgeDuration;
+// Behemoth Variables
+var int             chargeDamage;
+var float           hitMomentum;
 
 /*
  * Initialisation
@@ -51,6 +51,7 @@ function PostBeginPlay()
 	defaultFeatures.pawnAnimSet = Mesh.AnimSets[0];
 	defaultFeatures.pawnAnimTree = Mesh.AnimTreeTemplate;
 	defaultFeatures.pawnMoveType = defaultMoveType;
+	currentFeatures = defaultFeatures;
 }
 
 /*
@@ -61,116 +62,98 @@ function PawnFeatures returnPawnFeatures(Pawn Other)
 	return AzurukPawn(Other).defaultFeatures;
 }
 
-function bool DoDodge(eDoubleClickDir DoubleClickMove)
+event Bump(Actor Other, PrimitiveComponent OtherComp, Vector HitNormal)
 {
-	local vector X,Y,Z;
+	local Pawn otherPawn;
+	local KActor otherKActor;
+	local Vector Momentum;
+
+	super.Bump(Other, OtherComp, HitNormal);
+
+	otherPawn = Pawn(Other);
+	otherKActor = KActor(Other);
 	
-	//finds global axes of pawn
-	GetAxes(Rotation, X, Y, Z);
-
-	if( !isDodging && Physics == Phys_Walking )
+	if (GroundSpeed > 700 && self.currentFeatures.pawnMoveType == M_Behemoth)
 	{
-		//temporarily raise speeds
-		AirSpeed = DodgeSpeed;
-		GroundSpeed = DodgeSpeed;
-		isDodging = true;
-		Velocity.Z = -default.GroundSpeed;
-
-		switch ( DoubleClickMove )
+		if (otherPawn != none)
 		{
-			//dodge left
-			case DCLICK_Left:
-				DodgeVelocity = -DodgeSpeed*Normal(Y);
-				break;
-			//dodge right
-			case DCLICK_Right:
-				DodgeVelocity = DodgeSpeed*Normal(Y);
-				break;
-				//dodge left
-			case DCLICK_Forward:
-				DodgeVelocity = DodgeSpeed*Normal(X);
-				break;
-			//dodge right
-			case DCLICK_Back:
-				DodgeVelocity = -DodgeSpeed*Normal(X);
-				break;
-			//in case there is an error
-			default:
-				`log('DoDodge Error');
-				break;
+			Momentum = Normal(otherPawn.Location + Location) * hitMomentum;
+			otherPawn.TakeDamage(chargeDamage, Instigator.Controller, HitNormal, Momentum, class'DmgType_Crushed');
+			otherPawn.Controller.GotoState('Stunned');
 		}
-
-		Velocity = DodgeVelocity;
-		isDodging = false; //prevent dodging mid dodge
-		PlayerController(Controller).IgnoreMoveInput(true); //prevent the player from controlling pawn direction
-		PlayerController(Controller).IgnoreLookInput(true); //prevent the player from controlling rotation
-		SetPhysics(Phys_Flying); //gives the right physics
-		SetTimer(DodgeDuration,false,'UnDodge'); //time until the dodge is done
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-	
-}
-
-function Dodging()
-{
-	local vector TraceStart3;
-	local vector TraceEnd1, TraceEnd2, TraceEnd3;
-
-
-	if( isDodging )
-	{
-		//trace location for detecting objects just below pawn
-		TraceEnd1 = Location;
-		TraceEnd1.Z = Location.Z - 50;
-
-		//trace location for detecting objects below pawn that are close
-		TraceEnd2 = Location;
-		TraceEnd2.Z = Location.Z - 120;
-
-		//trace locations for detecting ledges pawn will fall off
-		TraceStart3 = Location + 10*normal(DodgeVelocity);
-		TraceEnd3 = TraceStart3;
-		TraceEnd3.Z = TraceStart3.Z - 121;
-
-		if( FastTrace(TraceEnd1) && !FastTrace(TraceEnd2) ) //nothing is very close and something is sort of close
+		else if (otherKActor != none)
 		{
-			Velocity.Z = -default.GroundSpeed; //push pawn to the ground
-		}
-
-
-		if( FastTrace(TraceEnd3, TraceStart3) ) //pawn is about to fall off a ledge
-		{
-			UnDodge();
-		}
-		else
-		{
-			//maintain a constant velocity
-			Velocity.X = DodgeVelocity.X;
-			Velocity.Y = DodgeVelocity.Y;
+			Momentum = Normal(otherKActor.Location + Location) * hitMomentum;
+			otherKActor.TakeDamage(chargeDamage, Instigator.Controller, HitNormal, Momentum, class'DmgType_Crushed');
 		}
 	}
 }
 
-function UnDodge()
-{
-	local vector IdealVelocity;
-
-	SetPhysics(Phys_Falling); //use falling instead of walking in case we are mid-air after the dodge
-	isDodging = false;
-	PlayerController(Controller).IgnoreMoveInput(false);
-	PlayerController(Controller).IgnoreLookInput(false);
-	GroundSpeed = default.GroundSpeed;
-	AirSpeed = default.AirSpeed;
-
-	//reset the velocity of pawn
-	IdealVelocity = normal(DodgeVelocity)*default.GroundSpeed;
-	Velocity.X = IdealVelocity.X;
-	Velocity.Y = IdealVelocity.Y;
-}
+//simulated function PlayDying(class<DamageType> DamageType, vector HitLoc)
+//{
+//	local vector ApplyImpulse, ShotDir;
+  
+//	bReplicateMovement = false;
+//	bTearOff = true;
+//	Velocity += TearOffMomentum;
+//	SetDyingPhysics();
+//	bPlayedDeath = true;
+//	HitDamageType = DamageType; // these are replicated to other clients
+//	TakeHitLocation = HitLoc;
+//	if ( WorldInfo.NetMode == NM_DedicatedServer )
+//	{
+//		GotoState('Dying');
+//		return;
+//	}
+//	Mesh.SetBlockRigidBody(true);
+//	InitRagdoll();
+//	mesh.MinDistFactorForKinematicUpdate = 0.f;
+  
+//	if (Physics == PHYS_RigidBody)
+//	{
+//		//@note: Falling instead of None so Velocity/Acceleration don't get cleared
+//		setPhysics(PHYS_Falling);
+//	}
+//	PreRagdollCollisionComponent = CollisionComponent;
+//	CollisionComponent = Mesh;
+//	if( Mesh.bNotUpdatingKinematicDueToDistance )
+//	{
+//		Mesh.ForceSkelUpdate();
+//		Mesh.UpdateRBBonesFromSpaceBases(TRUE, TRUE);
+//	}
+//	if( Mesh.PhysicsAssetInstance != None )
+//	{
+//		Mesh.PhysicsAssetInstance.SetAllBodiesFixed(FALSE);
+//		Mesh.SetRBChannel(RBCC_Pawn);
+//		Mesh.SetRBCollidesWithChannel(RBCC_Default,TRUE);
+//		Mesh.SetRBCollidesWithChannel(RBCC_Pawn,TRUE);
+//		Mesh.SetRBCollidesWithChannel(RBCC_Vehicle,TRUE);
+//		Mesh.SetRBCollidesWithChannel(RBCC_Untitled3,FALSE);
+//		Mesh.SetRBCollidesWithChannel(RBCC_BlockingVolume,TRUE);
+//		Mesh.ForceSkelUpdate();
+//		Mesh.UpdateRBBonesFromSpaceBases(TRUE, TRUE);
+//		Mesh.PhysicsWeight = 1.0;
+//		Mesh.bUpdateKinematicBonesFromAnimation=false;
+//		// mesh.bPauseAnims=True;
+//		Mesh.SetRBLinearVelocity(Velocity, false);
+//		mesh.SetTranslation(vect(0,0,1) * 6);
+//		Mesh.ScriptRigidBodyCollisionThreshold = MaxFallSpeed;
+//		Mesh.SetNotifyRigidBodyCollision(true);
+//		Mesh.WakeRigidBody();
+//	}
+//	if( TearOffMomentum != vect(0,0,0) )
+//	{
+//		ShotDir = normal(TearOffMomentum);
+//		ApplyImpulse = ShotDir * DamageType.default.KDamageImpulse;
+//		// If not moving downwards - give extra upward kick
+//		if ( Velocity.Z > -10 )
+//		{
+//			ApplyImpulse += Vect(0,0,1)*2;
+//		}
+//		Mesh.AddImpulse(ApplyImpulse, TakeHitLocation,, true);
+//	}
+//	GotoState('Dying');
+//}
 
 State Dying
 {
@@ -272,9 +255,39 @@ Begin:
 
 defaultproperties
 {
-	defaultMoveType = M_DefaultWalking
+	SightRadius=3000.00
 
-	DodgeSpeed = 1200
-	DodgeDuration = 0.3
-	isDodging = false
+	// Behemoth Defaults
+	chargeDamage = 5
+	hitMomentum = 40000.0
+
+	defaultMoveType = M_PlayerWalking
+
+	Components.Remove(Sprite)
+	
+	CollisionType = Collide_BlockAll
+	BlockRigidBody = true
+	bCollideWorld = true
+	bBlockActors = true
+	bCollideActors = true
+
+	Begin Object Class=DynamicLightEnvironmentComponent Name=PawnLightEnvironment
+        bSynthesizeSHLight=true
+        bIsCharacterLightEnvironment=true
+        bUseBooleanEnvironmentShadowing=false
+    End Object
+    Components.Add(PawnLightEnvironment)
+    LightEnvironment=PawnLightEnvironment
+
+	Begin Object Name=CollisionCylinder
+		CollisionRadius=+30.000000
+		CollisionHeight=+50.000000
+		BlockNonZeroExtent=true
+		BlockZeroExtent=true
+		BlockActors=true
+		CollideActors=true
+	End Object
+	CollisionComponent=CollisionCylinder
+	CylinderComponent=CollisionCylinder
+	Components.Add(CollisionCylinder)
 }
