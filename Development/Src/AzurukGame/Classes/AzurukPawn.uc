@@ -65,17 +65,27 @@ function PawnFeatures returnPawnFeatures(Pawn Other)
 event Bump(Actor Other, PrimitiveComponent OtherComp, Vector HitNormal)
 {
 	local Pawn otherPawn;
+	local KActor otherKActor;
 	local Vector Momentum;
 
 	super.Bump(Other, OtherComp, HitNormal);
 
 	otherPawn = Pawn(Other);
-
-	if (otherPawn != none && self.currentFeatures.pawnMoveType == M_Behemoth && GroundSpeed > 700)
+	otherKActor = KActor(Other);
+	
+	if (GroundSpeed > 700 && self.currentFeatures.pawnMoveType == M_Behemoth)
 	{
-		Momentum = Normal(otherPawn.Location - Location) * hitMomentum;
-		otherPawn.TakeDamage(chargeDamage, Instigator.Controller, HitNormal, Momentum, class'DmgType_Crushed');
-		otherPawn.Controller.GotoState('Stunned');
+		if (otherPawn != none)
+		{
+			Momentum = Normal(otherPawn.Location + Location) * hitMomentum;
+			otherPawn.TakeDamage(chargeDamage, Instigator.Controller, HitNormal, Momentum, class'DmgType_Crushed');
+			otherPawn.Controller.GotoState('Stunned');
+		}
+		else if (otherKActor != none)
+		{
+			Momentum = Normal(otherKActor.Location + Location) * hitMomentum;
+			otherKActor.TakeDamage(chargeDamage, Instigator.Controller, HitNormal, Momentum, class'DmgType_Crushed');
+		}
 	}
 }
 
@@ -179,9 +189,11 @@ Begin:
 
 defaultproperties
 {
+	SightRadius=3000.00
+
 	// Behemoth Defaults
 	chargeDamage = 5
-	hitMomentum = 500000.0
+	hitMomentum = 40000.0
 
 	defaultMoveType = M_PlayerWalking
 
