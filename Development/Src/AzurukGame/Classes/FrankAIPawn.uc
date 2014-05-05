@@ -11,6 +11,7 @@ event PostBeginPlay()
 	super.PostBeginPlay();
 	AddDefaultInventory();
 	defaultFeatures.CreatureName = "Frank";
+	Suicide();
 }
 
 DefaultProperties

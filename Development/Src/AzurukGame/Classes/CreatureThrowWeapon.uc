@@ -70,6 +70,7 @@ simulated function StartFire(byte FireModeNum)
 	{
 		if ( PhysicsGrabber.GrabbedComponent != None )
 		{
+			PhysicsGrabber.GrabbedComponent.SetActorCollision(true, true);
 			PhysicsGrabber.ReleaseComponent();
 		}
 		else if( HitActor != None &&
@@ -108,10 +109,12 @@ simulated function StartFire(byte FireModeNum)
 		if ( PhysicsGrabber.GrabbedComponent != None )
 		{
 			PhysicsGrabber.GrabbedComponent.AddImpulse(Vector(GetAdjustedAim(Instigator.GetWeaponStartTraceLocation())) * ThrowImpulse);
+			PhysicsGrabber.GrabbedComponent.SetActorCollision(true, true);
 			PhysicsGrabber.ReleaseComponent();
 		}
 		else
 		{
+			`log("fire");
 			Super.StartFire( FireModeNum );
 		}
 	}

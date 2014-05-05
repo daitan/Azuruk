@@ -14,7 +14,7 @@ var() const Name SwordHandSocketName;
  */
 var PawnFeatures morphSets[4], currentFeatures;
 var Pawn interactingPawn, lastPawnTouched;
-var int MorphCurrentForm, numStoredMorphs, IndexFirstForm, IndexSecondForm;
+var int MorphCurrentForm, numStoredMorphs;
 var float MorphEnergyDrainRate, MorphEnergyRechargeRate, UpdateRate,
 		  MorphEnergyMax, MorphEnergyCurrent[2], MorphEnergyRechargeDelay;
 var bool bNoEmptyMorphs, bInMenu, bInArboriBossRegion;
@@ -55,11 +55,21 @@ function SetMorphSet(int index)
 	}
 	else if (morphSets[index] != currentFeatures)
 	{
+		if (MorphCurrentForm == 1)
+		{
+			StopMorphFormOne();
+		}
+		else if (MorphCurrentForm == 2)
+		{
+			StopMorphFormTwo();
+		}
+
 		MorphCurrentForm = index + 1;
 		currentFeatures = morphSets[index];
 		Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
 		Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
 		Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
+		GetCreatureWeapon(currentFeatures.CreatureName);
 		
 		if (MorphCurrentForm == 1)
 		{
@@ -83,6 +93,23 @@ function SetMorphSet(int index)
 	}
 }
 
+function GetCreatureWeapon(string name)
+{
+	switch (name)
+	{
+		case "Frank":
+			InvManager.DiscardInventory();
+			InvManager.CreateInventory(class'CreatureThrowWeapon');
+			break;
+		case "None":
+			InvManager.DiscardInventory();
+			break;
+		default:
+			InvManager.DiscardInventory();
+			break;
+	}
+}
+
 /*
  * GetMorphSet
  * 
@@ -92,26 +119,25 @@ function SetMorphSet(int index)
 function bool GetMorphSet()
 {
 	local int i;
+	local pawnFeatures tempFeatures;
 
 	if (interactingPawn != none)
 	{
 		if (!bNoEmptyMorphs) {
+			tempFeatures = returnPawnFeatures(interactingPawn);
 			for (i = 0; i < ArrayCount(morphSets); i++)
 			{
 				if (morphSets[i].pawnMesh == none)
 				{
-					morphSets[i] = returnPawnFeatures(interactingPawn);
+					morphSets[i] = tempFeatures;
 					numStoredMorphs += 1;
-					if (IndexFirstForm == -1) {
-						IndexFirstForm = i;
-					} 
-					else if (IndexSecondForm == -1)
-					{
-						IndexSecondForm = i;
-					}
 					if (numStoredMorphs == ArrayCount(morphSets)) {
 						bNoEmptyMorphs = true;
 					}
+					break;
+				}
+				else if (morphSets[i] == tempFeatures)
+				{
 					break;
 				}
 			}
@@ -161,17 +187,36 @@ function array<string> GetCurrentCreatureNames()
 	return names;
 }
 
+function SwitchStoredMorphs(int oldInd, int newInd)
+{
+	local pawnFeatures temp;
+
+	temp = morphSets[oldInd];
+	morphSets[oldInd] = morphSets[newInd];
+	morphSets[newInd] = temp;
+}
+
 exec function ChangeFirstMorph()
 {
+	local int temp;
 	if (AzurukHUD(PlayerController(Controller).myHUD).bShowMorphSelectionMenu) {
-		IndexFirstForm = AzurukHUD(PlayerController(Controller).myHUD).CurrentIndex;
+		temp = AzurukHUD(PlayerController(Controller).myHUD).CurrentIndex;
+		if (morphSets[temp].pawnMesh != none) 
+		{
+			SwitchStoredMorphs(0, temp);
+		}
 	}
 }
 
 exec function ChangeSecondMorph()
 {
+	local int temp;
 	if (AzurukHUD(PlayerController(Controller).myHUD).bShowMorphSelectionMenu) {
-		IndexSecondForm = AzurukHUD(PlayerController(Controller).myHUD).CurrentIndex;
+		temp = AzurukHUD(PlayerController(Controller).myHUD).CurrentIndex;
+		if (morphSets[temp].pawnMesh != none) 
+		{
+			SwitchStoredMorphs(1, temp);
+		}
 	}
 }
 
@@ -182,6 +227,7 @@ exec function DefaultFormTransform()
 	Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
 	Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
 	Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
+	GetCreatureWeapon("None");
 }
 
 function float GetMorphEnergyCurrent(int morph)
