@@ -537,10 +537,10 @@ defaultproperties
 	SwordHandSocketName="WeaponPoint"
 
 	Begin Object Class=SkeletalMeshComponent Name=PawnSkeletalMesh
-		SkeletalMesh=SkeletalMesh'AzurukContent.SkeletalMeshes.SK_Crowd_Robot'
-		//AnimSets[0]=
-		//AnimTreeTemplate=
-		//PhysicsAsset=
+		SkeletalMesh=SkeletalMesh'Main_Char_JinRok.skel_.JinRok'
+		AnimSets[0]=AnimSet'Main_Char_JinRok.skel_.Anim_JinRok'
+		AnimTreeTemplate=AnimTree'Main_Char_JinRok.AnimTree.AnimTree_JinRok'
+		PhysicsAsset=PhysicsAsset'Main_Char_JinRok.physicsasset_.JinRok_Physics'
         LightEnvironment=PawnLightEnvironment
 		BlockActors=true
         CollideActors=true
