@@ -4,11 +4,6 @@
 class AzurukPlayerPawn extends AzurukPawn;
 
 /*
- * Constants
- */
-var() const Name SwordHandSocketName;
-
-/*
  * Variables
  */
 var PawnFeatures morphSets[4];
@@ -532,8 +527,6 @@ defaultproperties
 	defaultMoveType = M_PlayerWalking
 	
 	InventoryManagerClass=class'AzurukGame.AzurukInventoryManager'
-
-	SwordHandSocketName="WeaponPoint"
 
 	Begin Object Class=SkeletalMeshComponent Name=PawnSkeletalMesh
 		SkeletalMesh=SkeletalMesh'Main_Char_JinRok.skel_.JinRok'
