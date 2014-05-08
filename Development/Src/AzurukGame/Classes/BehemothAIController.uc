@@ -20,8 +20,15 @@ function NextDecision()
 
 state Idle
 {
+	// Player is seen - Charge
+	event SeePlayer(Pawn Seen)
+	{
+		super.SeePlayer(Seen);
+		PPawn = GetALocalPlayerController().Pawn;
+		GotoState('Charge');
+	}
 Begin:
-	Sleep(5);
+	Sleep(Rand(5));
 	NextDecision();
 }
 
@@ -34,6 +41,11 @@ auto state Patrol
 		PPawn = GetALocalPlayerController().Pawn;
 		GotoState('Charge');
 	}
+ReturnHome:
+	// Move to last known Destination
+	MoveTo(Destination.Location, Destination);
+	// Decide Next Action
+	NextDecision();
 Begin:
 	//If we just began or we have reached the Destination
 	//pick a new destination - at random
@@ -41,11 +53,19 @@ Begin:
 	{
 		Destination = FindRandomDest();
 	}
+	// If we have destination and haven't reached it
+	// We must return to path area
+	else
+	{
+		Goto 'ReturnHome';
+	}
+	
+	// Rotate towards destination
+	Pawn.SetDesiredRotation(Rotator(Destination.Location));
+	FinishRotation();
 
 	//Find a path to the destination and move to the next node in the path
-	MoveToward(FindPathToward(Destination), FindPathToward(Destination));
-
-	Sleep(2);
+	MoveToward(FindPathToward(Destination), Destination);
 
 	NextDecision();
 }
@@ -63,6 +83,8 @@ state Scanforplayer
 Begin:
 	// Look at previous known location
 	Pawn.SetRotation(Rotator(knownPos));
+	// Wait
+	Sleep(2);
 	// Goto Patrol
 	GotoState('Patrol');
 }

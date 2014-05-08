@@ -529,9 +529,9 @@ defaultproperties
 	InventoryManagerClass=class'AzurukGame.AzurukInventoryManager'
 
 	Begin Object Class=SkeletalMeshComponent Name=PawnSkeletalMesh
-		SkeletalMesh=SkeletalMesh'Main_Char_JinRok.old_.JinRokold'
-		AnimSets[0]=AnimSet'Main_Char_JinRok.old_.Anim_JinRokold'
-		AnimTreeTemplate=AnimTree'Main_Char_JinRok.old_.AnimTree_JinRokold'
+		SkeletalMesh=SkeletalMesh'Main_Char_JinRok.SkeletalMesh.JinRok'
+		AnimSets[0]=AnimSet'Main_Char_JinRok.AnimSet.JinRokAnimSet'
+		AnimTreeTemplate=AnimTree'Main_Char_JinRok.AnimTree.JinRokAnimTree'
 		PhysicsAsset=PhysicsAsset'Main_Char_JinRok.old_.JinRok_Physicsold'
         LightEnvironment=PawnLightEnvironment
 		BlockActors=true
