@@ -1,4 +1,12 @@
-class VespaAIPawn extends AzurukPawn;
+class VespaAIPawn extends AzurukPawn
+	placeable;
+
+event PostBeginPlay()
+{
+	super.PostBeginPlay();
+	defaultFeatures.CreatureName = "Vespa";
+}
+
 
 DefaultProperties
 {

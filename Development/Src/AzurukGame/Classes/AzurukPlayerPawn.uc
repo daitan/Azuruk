@@ -31,7 +31,6 @@ function PostBeginPlay()
 {
 	super.PostBeginPlay();
 	defaultFeatures.CreatureName = "No morph";
-	currentFeatures = defaultFeatures;
 }
 
 /*

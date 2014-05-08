@@ -40,7 +40,18 @@ state PlayerWalking
 {
 	function ProcessMove(float DeltaTime, vector NewAccel, eDoubleClickDir DoubleClickMove, rotator DeltaRot)
 	{
-		Super.ProcessMove(DeltaTime,NewAccel,DoubleClickMove,DeltaRot);
+		if( Pawn == None )
+		{
+			return;
+		}
+
+		if (Role == ROLE_Authority)
+		{
+			// Update ViewPitch for remote clients
+			Pawn.SetRemoteViewPitch( Rotation.Pitch );
+		}
+
+		Pawn.Acceleration = NewAccel;
 
 		if ( (DoubleClickMove == DCLICK_Active) && (Pawn.Physics == PHYS_Falling) )
 			DoubleClickDir = DCLICK_Active;
@@ -56,7 +67,6 @@ state PlayerWalking
 		local vector			X,Y,Z, NewAccel;
 		local eDoubleClickDir	DoubleClickMove;
 		local rotator			OldRotation;
-		local bool				bSaveJump;
 
 		if( Pawn == None )
 		{
@@ -70,6 +80,9 @@ state PlayerWalking
 			{
 				case M_CreatureWalking:
 					GotoState('CreatureWalking');
+					break;
+				case M_CreatureFlying:
+					GotoState('CreatureFlying');
 					break;
 				case M_Behemoth:
 					GotoState('Behemoth');					
@@ -91,17 +104,6 @@ state PlayerWalking
 			// Update rotation.
 			OldRotation = Rotation;
 			UpdateRotation( DeltaTime );
-			bDoubleJump = false;
-
-			if( bPressedJump && Pawn.CannotJumpNow() )
-			{
-				bSaveJump = true;
-				bPressedJump = false;
-			}
-			else
-			{
-				bSaveJump = false;
-			}
 
 			if( Role < ROLE_Authority ) // then save this move and replicate it
 			{
@@ -111,10 +113,8 @@ state PlayerWalking
 			{
 				ProcessMove(DeltaTime, NewAccel, DoubleClickMove, OldRotation - Rotation);
 			}
-			bPressedJump = bSaveJump;
 		}
 	}
-
 begin:
 }
 
@@ -168,6 +168,19 @@ state CreatureWalking
 	}
 
 begin:
+}
+
+state CreatureFlying extends PlayerFlying
+{
+	function PlayerMove(float DeltaTime)
+	{
+		super.PlayerMove(DeltaTime);
+
+		if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType == M_PlayerWalking)
+		{
+			GotoState(Pawn.LandMovementState);					
+		}
+	}
 }
 
 state Behemoth extends CreatureWalking
