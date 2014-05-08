@@ -50,8 +50,9 @@ function UpdateViewTarget(out TViewTarget OutVT, float DeltaTime)
 			switch( CameraStyle )
 			{
 				case 'ThirdPerson': 
-					TPawn.GetAxes(DesiredCamOrientation,X,Y,Z); // We will be working with coordinates in pawn space, but rotated according to the Desired Rotation.
-
+					// We will be working with coordinates in pawn space, but rotated according to the Desired Rotation.
+					TPawn.GetAxes(DesiredCamOrientation,X,Y,Z); 
+					
 					DesiredCamOrientation = TPawn.GetViewRotation();
 
 					if (DesiredCamOrientation != CurrentCamOrientation)
@@ -80,29 +81,28 @@ function UpdateViewTarget(out TViewTarget OutVT, float DeltaTime)
 	}
 }
 
-function ZoomIn()
-{
-	if (camzoomMin > ThirdPersonCamOffsetX)
-	{
-		ThirdPersonCamOffsetX += camSpeed;
-	}
-}
+//function ZoomIn()
+//{
+//	if (camzoomMin > ThirdPersonCamOffsetX)
+//	{
+//		ThirdPersonCamOffsetX += camSpeed;
+//	}
+//}
 
-function ZoomOut()
-{
-	if (camzoomMax < ThirdPersonCamOffsetX)
-	{
-		ThirdPersonCamOffsetX -= camSpeed;
-	}
-}
-
+//function ZoomOut()
+//{
+//	if (camzoomMax < ThirdPersonCamOffsetX)
+//	{
+//		ThirdPersonCamOffsetX -= camSpeed;
+//	}
+//}
 
 DefaultProperties
 {
-	ThirdPersonCamOffsetX = -80.0
+	ThirdPersonCamOffsetX = -250.0
     ThirdPersonCamOffsetY = 16.0
-    ThirdPersonCamOffsetZ = -10.0
-	camzoomMax = -200.0
-	camzoomMin = -80.0
-	camSpeed = 30.0
+    ThirdPersonCamOffsetZ = -10.0	
+	//camzoomMax = -200.0
+	//camzoomMin = -80.0
+	//camSpeed = 30.0
 }

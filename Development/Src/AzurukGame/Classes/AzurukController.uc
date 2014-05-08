@@ -4,19 +4,19 @@ class AzurukController extends PlayerController
 /*
  * Camera Zoom Execute Functions
  */
-exec function CamZoomIn()
-{
-	if (!AzurukPlayerPawn(Pawn).bInMenu) {
-		AzurukCamera(PlayerCamera).ZoomIn();
-	}
-}
+//exec function CamZoomIn()
+//{
+//	if (!AzurukPlayerPawn(Pawn).bInMenu) {
+//		AzurukCamera(PlayerCamera).ZoomIn();
+//	}
+//}
 
-exec function CamZoomOut()
-{
-	if (!AzurukPlayerPawn(Pawn).bInMenu) {
-		AzurukCamera(PlayerCamera).ZoomOut();
-	}
-}
+//exec function CamZoomOut()
+//{
+//	if (!AzurukPlayerPawn(Pawn).bInMenu) {
+//		AzurukCamera(PlayerCamera).ZoomOut();
+//	}
+//}
 
 /*
  * Morphing Execute Functions

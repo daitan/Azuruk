@@ -167,19 +167,62 @@ state CreatureWalking
 		}
 	}
 
+	event BeginState(Name PreviousStateName)
+	{
+		DoubleClickDir = DCLICK_None;
+		GroundPitch = 0;
+		if ( Pawn != None )
+		{
+			if (Pawn.Physics != PHYS_Falling && Pawn.Physics != PHYS_RigidBody) // FIXME HACK!!!
+				Pawn.SetPhysics(Pawn.WalkingPhysics);
+		}
+	}
+
+	event EndState(Name NextStateName)
+	{
+		GroundPitch = 0;
+	}
+
 begin:
 }
 
-state CreatureFlying extends PlayerFlying
+state CreatureFlying
 {
 	function PlayerMove(float DeltaTime)
 	{
-		super.PlayerMove(DeltaTime);
+		local vector X,Y,Z;
 
 		if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType == M_PlayerWalking)
 		{
 			GotoState(Pawn.LandMovementState);					
 		}
+
+		GetAxes(Rotation,X,Y,Z);
+
+		Pawn.Acceleration = PlayerInput.aForward*X + PlayerInput.aStrafe*Y + PlayerInput.aUp*vect(0,0,1);;
+		Pawn.Acceleration = Pawn.AccelRate * Normal(Pawn.Acceleration);
+
+		if (Pawn.Acceleration == vect(0,0,0))
+		{
+			Pawn.Velocity = vect(0,0,0);
+		}
+
+		// Update rotation.
+		UpdateRotation( DeltaTime );
+
+		if ( Role < ROLE_Authority ) // then save this move and replicate it
+		{
+			ReplicateMove(DeltaTime, Pawn.Acceleration, DCLICK_None, rot(0,0,0));
+		}
+		else
+		{
+			ProcessMove(DeltaTime, Pawn.Acceleration, DCLICK_None, rot(0,0,0));
+		}
+	}
+
+	event BeginState(Name PreviousStateName)
+	{
+		Pawn.SetPhysics(PHYS_Flying);
 	}
 }
 
