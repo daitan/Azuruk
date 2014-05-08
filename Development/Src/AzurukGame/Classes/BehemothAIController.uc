@@ -43,7 +43,9 @@ auto state Patrol
 	}
 ReturnHome:
 	// Move to last known Destination
-	MoveTo(Destination.Location, Destination);
+	Pawn.SetDesiredRotation(Rotator(Destination.Location));
+	FinishRotation();
+	MoveTo(Destination.Location);
 	// Decide Next Action
 	NextDecision();
 Begin:
@@ -61,11 +63,11 @@ Begin:
 	}
 	
 	// Rotate towards destination
-	Pawn.SetDesiredRotation(Rotator(Destination.Location));
+	Pawn.SetDesiredRotation(Rotator(FindPathToward(Destination).Location));
 	FinishRotation();
 
 	//Find a path to the destination and move to the next node in the path
-	MoveToward(FindPathToward(Destination), Destination);
+	MoveToward(FindPathToward(Destination));
 
 	NextDecision();
 }
@@ -82,9 +84,8 @@ state Scanforplayer
 
 Begin:
 	// Look at previous known location
-	Pawn.SetRotation(Rotator(knownPos));
-	// Wait
-	Sleep(2);
+	Pawn.SetDesiredRotation(Rotator(knownPos));
+	FinishRotation();
 	// Goto Patrol
 	GotoState('Patrol');
 }
