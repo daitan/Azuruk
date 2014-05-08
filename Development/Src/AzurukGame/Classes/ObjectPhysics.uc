@@ -1,6 +1,6 @@
 class ObjectPhysics extends KActorSpawnable;
 
-var() bool bFrankUsable;
+var bool bFrankUsable;
 
 simulated event PostBeginPlay()
 {
@@ -20,12 +20,12 @@ DefaultProperties
 
 	Begin Object Class=StaticMeshComponent Name=ObjectPhysicsMesh
 	
-	// StaticMesh=StaticMesh''
-	bNotifyRigidBodyCollision=true
+		// StaticMesh=StaticMesh''
+		bNotifyRigidBodyCollision=true
 	
-	HiddenGame=FALSE 
-	ScriptRigidBodyCollisionThreshold=0.001 
-	LightingChannels=(Dynamic=TRUE) 
+		HiddenGame=FALSE 
+		ScriptRigidBodyCollisionThreshold=0.001 
+		LightingChannels=(Dynamic=TRUE) 
 	End Object
 	Components(1)=ObjectPhysicsMesh
 	CollisionComponent = ObjectPhysicsMesh
