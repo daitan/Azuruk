@@ -13,7 +13,7 @@ event RigidBodyCollision(PrimitiveComponent HitComponent, PrimitiveComponent Oth
 	local Pawn P;
 	local int DamageAmount; // Damage points take to the pawn
 
-	P = Pawn(Other);
+	//P = Pawn(OtherComponent);
 	if( P != none && P.Controller != none )
 	{
 		if( MinDamageVelocity < 0 )
@@ -31,7 +31,7 @@ event RigidBodyCollision(PrimitiveComponent HitComponent, PrimitiveComponent Oth
 			{
 				DamageAmount = MaxDamageAmount * (( VSize(Velocity) - MinDamageVelocity ) / ( MaxDamageVelocity - MinDamageVelocity ));
 			}
-			P.TakeDamage(DamageAmount, None, HitLocation, vect(0,0,0), class'DamageType');
+			P.TakeDamage(DamageAmount, None, RigidCollisionData.ContactInfos[0].ContactPosition, vect(0,0,0), class'DamageType');
 		}
 	}
 	
