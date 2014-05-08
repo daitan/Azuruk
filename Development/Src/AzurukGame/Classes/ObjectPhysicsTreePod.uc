@@ -1,4 +1,4 @@
-class ObjectPhysicsTreePod extends KActorSpawnable
+class ObjectPhysicsTreePod extends ObjectPhysics
 	placeable;
 
 // The max damage take to the pawn when the hit velocity reaches the  MaxDamageVelocity
@@ -9,7 +9,7 @@ var()   float	    MinDamageVelocity;
 var()   float	    MaxDamageVelocity;
 var     bool        bFrankUsable;          
 
-simulated event RigidBodyCollision(PrimitiveComponent HitComponent, PrimitiveComponent OtherComponent,
+event RigidBodyCollision(PrimitiveComponent HitComponent, PrimitiveComponent OtherComponent,
 	out const CollisionImpactData RigidCollisionData, int ContactIndex)
 {
 	local int DamageAmount; // Damage points take to the pawn
@@ -40,7 +40,7 @@ simulated event RigidBodyCollision(PrimitiveComponent HitComponent, PrimitiveCom
 
 simulated function TakeDamage(int DamageAmount, Controller EventInstigator, vector HitLocation, vector Momentum, class<DamageType> DamageType, optional TraceHitInfo HitInfo, optional Actor DamageCauser)
 {
-	if(DamageAmount >= 20)
+	if(DamageAmount >= 70)
 	{
 		Explode();
 	}
@@ -82,7 +82,7 @@ simulated event PostBeginPlay()
 /** Do actual explosion. */
 simulated function Explode()
 {
-	HurtRadius(50.0, 500.0, class'UTDamageType', 1000.0, Location,,, True);
+	HurtRadius(50.0, 300.0, class'UTDamageType', 50000.0, Location,,, True);
 
 	//// Fire particles
 	//if(ParticlesOnDestroy != None)
@@ -99,26 +99,19 @@ simulated function Explode()
 
 DefaultProperties
 {
-	Begin Object Class=SkeletalMeshComponent Name=ObjectPhysicsMesh
-		SkeletalMesh=SkeletalMesh'ExplodePodTree.Skel.Skel_BigPod_01'
+	Begin Object Name=ObjectPhysicsMesh
+		StaticMesh=StaticMesh'ExplodePodTree.Stat_SmlPod_01'
 		bNotifyRigidBodyCollision=true
-		HiddenGame=FALSE 
-		LightingChannels=(Dynamic=TRUE)
+		HiddenGame=false 
+		ColllidActors=true
+		BlockActors=true
+		AlwaysCheckCollision=true
+		ScriptRigidBodyCollisionThreshold=0.001
+		LightingChannels=(Dynamic=true)
 		BlockRigidBody=true
 		RBChannel=RBCC_GameplayPhysics
-		RBCollideWithChannels=(Default=TRUE,BlockingVolume=TRUE,GameplayPhysics=TRUE,EffectPhysics=TRUE)
-		bBlockFootPlacement=false
+		RBCollideWithChannels=(Default=True,GameplayPhysics=True)
 	End Object
-	Components(0)=ObjectPhysicsMesh
-	CollisionComponent=ObjectPhysicsMesh
-
-	Physics=PHYS_RigidBody
-
-	bBlockActors= true
-	bCollideActors=true
-	bCollideWorld=true
-	bWakeOnLevelStart=true
-	bFrankUsable=true
 
 	MinDamageVelocity = 40;
 	MaxDamageVelocity = 1000;

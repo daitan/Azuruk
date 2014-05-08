@@ -310,7 +310,7 @@ function DrainMorphEnergyFormTwo()
 
 	if (MorphEnergyCurrent[1] == 0.0)
 	{
-		StopMorphFormOne();
+		StopMorphFormTwo();
 	}
 }
 
@@ -327,7 +327,7 @@ function RechargeMorphEnergyFormTwo()
 
 	if (MorphEnergyCurrent[1] == MorphEnergyMax)
 	{
-		StopRechargeFormOne();
+		StopRechargeFormTwo();
 	}
 }
 
