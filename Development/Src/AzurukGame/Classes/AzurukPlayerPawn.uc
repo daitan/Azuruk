@@ -100,6 +100,10 @@ function GetCreatureWeapon(string name)
 			InvManager.DiscardInventory();
 			InvManager.CreateInventory(class'CreatureThrowWeapon');
 			break;
+		case "Vespa":
+			InvManager.DiscardInventory();
+			InvManager.CreateInventory(class'VespaWeapon');
+			break;
 		case "None":
 			InvManager.DiscardInventory();
 			break;

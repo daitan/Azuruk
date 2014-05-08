@@ -7,7 +7,6 @@ var()   int	        MaxDamageAmount;
 var()   float	    MinDamageVelocity;
 // If the velocity reaches this point, it will take the max damage to the pawn
 var()   float	    MaxDamageVelocity;
-var     bool        bFrankUsable;          
 
 event RigidBodyCollision(PrimitiveComponent HitComponent, PrimitiveComponent OtherComponent,
 	out const CollisionImpactData RigidCollisionData, int ContactIndex)
@@ -101,16 +100,6 @@ DefaultProperties
 {
 	Begin Object Name=ObjectPhysicsMesh
 		StaticMesh=StaticMesh'ExplodePodTree.Stat_SmlPod_01'
-		bNotifyRigidBodyCollision=true
-		HiddenGame=false 
-		ColllidActors=true
-		BlockActors=true
-		AlwaysCheckCollision=true
-		ScriptRigidBodyCollisionThreshold=0.001
-		LightingChannels=(Dynamic=true)
-		BlockRigidBody=true
-		RBChannel=RBCC_GameplayPhysics
-		RBCollideWithChannels=(Default=True,GameplayPhysics=True)
 	End Object
 
 	MinDamageVelocity = 40;
