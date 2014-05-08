@@ -5,6 +5,26 @@ var Actor       Destination;
 var vector      knownPos, chargeDist;
 var float       tGroundSpeed, speedMultiplier, maxSpeed;
 
+function NextDecision()
+{
+	switch(Rand(2))
+	{
+		case 0:
+			GotoState('Patrol');
+			break;
+		case 1:
+			GotoState('Idle');
+			break;
+	}
+}
+
+state Idle
+{
+Begin:
+	Sleep(5);
+	NextDecision();
+}
+
 auto state Patrol
 {
 	// Player is seen - Charge
@@ -15,20 +35,31 @@ auto state Patrol
 		GotoState('Charge');
 	}
 Begin:
-	////If we just began or we have reached the Destination
-	////pick a new destination - at random
-	//if(Destination == none || Pawn.ReachedDestination(Destination))
-	//{
-	//	Destination = FindRandomDest();
-	//}
-	////Find a path to the destination and move to the next node in the path
-	//MoveToward(FindPathToward(Destination), FindPathToward(Destination));
-	//// Loop until playerseen
-	//Goto 'Begin';
+	//If we just began or we have reached the Destination
+	//pick a new destination - at random
+	if(Destination == none || Pawn.ReachedDestination(Destination))
+	{
+		Destination = FindRandomDest();
+	}
+
+	//Find a path to the destination and move to the next node in the path
+	MoveToward(FindPathToward(Destination), FindPathToward(Destination));
+
+	Sleep(2);
+
+	NextDecision();
 }
 
-state Scanforplayer extends Patrol
+state Scanforplayer
 {
+	// Player is seen - Charge
+	event SeePlayer(Pawn Seen)
+	{
+		super.SeePlayer(Seen);
+		PPawn = GetALocalPlayerController().Pawn;
+		GotoState('Charge');
+	}
+
 Begin:
 	// Look at previous known location
 	Pawn.SetRotation(Rotator(knownPos));
@@ -63,6 +94,7 @@ state Charge
 	event EndState(name NextStateName)
 	{
 		PPawn = none;
+		Pawn.GroundSpeed = default.tGroundSpeed;
 	}
 Begin:
 	// Run towards the known position
@@ -76,5 +108,5 @@ DefaultProperties
 	// Behemoth Default Values
 	speedMultiplier=00005.000000
 	maxSpeed=01000.000000
-	tGroundSpeed=0600.000000
+	tGroundSpeed=0300.000000
 }
