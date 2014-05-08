@@ -532,7 +532,7 @@ defaultproperties
 		SkeletalMesh=SkeletalMesh'Main_Char_JinRok.SkeletalMesh.JinRok'
 		AnimSets[0]=AnimSet'Main_Char_JinRok.AnimSet.JinRokAnimSet'
 		AnimTreeTemplate=AnimTree'Main_Char_JinRok.AnimTree.JinRokAnimTree'
-		PhysicsAsset=PhysicsAsset'Main_Char_JinRok.old_.JinRok_Physicsold'
+		PhysicsAsset=PhysicsAsset'Main_Char_JinRok.PhysicsAsset.JinRokPhysics'
         LightEnvironment=PawnLightEnvironment
 		BlockActors=true
         CollideActors=true
