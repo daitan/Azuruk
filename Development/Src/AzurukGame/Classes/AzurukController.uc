@@ -24,14 +24,14 @@ class AzurukController extends PlayerController
 exec function TransformOne()
 {
 	if (!AzurukPlayerPawn(Pawn).bInMenu) {
-		AzurukPlayerPawn(Pawn).SetMorphSet(0);
+		GotoState('Transforming');
 	}
 }
 
 exec function TransformTwo()
 {
 	if (!AzurukPlayerPawn(Pawn).bInMenu) {
-		AzurukPlayerPawn(Pawn).SetMorphSet(1);
+		GotoState('Transforming');
 	}
 }
 

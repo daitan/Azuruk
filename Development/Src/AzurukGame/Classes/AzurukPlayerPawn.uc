@@ -13,7 +13,7 @@ var float MorphEnergyDrainRate, MorphEnergyRechargeRate, UpdateRate,
 		  MorphEnergyMax, MorphEnergyCurrent[2], MorphEnergyRechargeDelay;
 var bool bNoEmptyMorphs, bInMenu, bInArboriBossRegion;
 
-var AnimNodePlayCustomAnim animDNA;
+var AnimNodePlayCustomAnim customAnim;
 
 // Dodging
 var vector DodgeVelocity;
@@ -46,7 +46,7 @@ simulated event PostInitAnimTree(SkeletalMeshComponent SkelComp)
 
 	if (SkelComp == Mesh)
 	{
-		animDNA = AnimNodePlayCustomAnim(SkelComp.FindAnimNode('IdleCustom'));
+		customAnim = AnimNodePlayCustomAnim(SkelComp.FindAnimNode('IdleCustom'));
 	}
 }
 
@@ -74,7 +74,6 @@ function SetMorphSet(int index)
 		{
 			StopMorphFormTwo();
 		}
-
 		MorphCurrentForm = index + 1;
 		currentFeatures = morphSets[index];
 		Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
@@ -519,7 +518,7 @@ event UnTouch(Actor Other)
 defaultproperties
 {
 	// Dodging Defaults
-	DodgeSpeed = 1200
+	DodgeSpeed = 1000
 	DodgeDuration = 0.3
 	isDodging = false
 
