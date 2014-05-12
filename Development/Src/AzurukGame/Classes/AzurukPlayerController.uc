@@ -19,7 +19,12 @@ function bool PerformedUseAction()
 {
 	super.PerformedUseAction();
 
-	return AzurukPlayerPawn(Pawn).GetMorphSet();
+	if (AzurukPlayerPawn(Pawn).interactingPawn != none && GetStateName() != 'DNAExtraction')
+	{
+		GotoState('DNAExtraction');
+		return true;
+	}
+	return false;
 }
 
 function name ReturnTransitionState()
@@ -46,11 +51,19 @@ function name ReturnTransitionState()
 
 state Stunned
 {
-	event BeginState(name PreviousStateName)
-	{
-		GotoState(PreviousStateName);
-	}
 Begin:
+	Sleep(stunnedTime);
+	GotoState(ReturnTransitionState());
+}
+
+state DNAExtraction
+{
+Begin:
+	Pawn.SetDesiredRotation(Rotator(AzurukPlayerPawn(Pawn).interactingPawn.Location));
+	AzurukPlayerPawn(Pawn).animDNA.PlayCustomAnim('JinRok_DNA', 1.0, 0.2, 0.2, false);
+	FinishAnim(AzurukPlayerPawn(Pawn).animDNA.GetCustomAnimNodeSeq());
+	AzurukPlayerPawn(Pawn).GetMorphSet();
+	GotoState(ReturnTransitionState());
 }
 
 /*
@@ -77,16 +90,9 @@ state PlayerWalking
 	{
 		super.PlayerMove(DeltaTime);
 
-		if( Pawn == None )
+		if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType != M_PlayerWalking)
 		{
-			GotoState('Dead');
-		}
-		else
-		{
-			if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType != M_PlayerWalking)
-			{
-				GotoState(ReturnTransitionState());
-			}
+			GotoState(ReturnTransitionState());
 		}
 	}
 begin:

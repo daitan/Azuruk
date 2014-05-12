@@ -13,6 +13,8 @@ var float MorphEnergyDrainRate, MorphEnergyRechargeRate, UpdateRate,
 		  MorphEnergyMax, MorphEnergyCurrent[2], MorphEnergyRechargeDelay;
 var bool bNoEmptyMorphs, bInMenu, bInArboriBossRegion;
 
+var AnimNodePlayCustomAnim animDNA;
+
 // Dodging
 var vector DodgeVelocity;
 var int DodgeSpeed;
@@ -36,6 +38,16 @@ function PostBeginPlay()
 simulated function name GetDefaultCameraMode( PlayerController RequestedBy )
 {
 	return 'ThirdPerson';
+}
+
+simulated event PostInitAnimTree(SkeletalMeshComponent SkelComp)
+{
+	super.PostInitAnimTree(SkelComp);
+
+	if (SkelComp == Mesh)
+	{
+		animDNA = AnimNodePlayCustomAnim(SkelComp.FindAnimNode('IdleCustom'));
+	}
 }
 
 /*
@@ -141,7 +153,7 @@ function bool GetMorphSet()
 				}
 				else if (morphSets[i] == tempFeatures)
 				{
-					break;
+					return false;
 				}
 			}
 		}
@@ -149,6 +161,10 @@ function bool GetMorphSet()
 		{
 			AzurukHUD(PlayerController(Controller).myHUD).ToggleMorphSelectionMenu();
 		}
+	}
+	else 
+	{
+		return false;
 	}
 	return true;
 }
