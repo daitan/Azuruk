@@ -25,7 +25,7 @@ var int morphInput;
  */
 exec function TransformOne()
 {
-	if (!AzurukPlayerPawn(Pawn).bInMenu && AzurukPlayerPawn(Pawn).CanMorph(0)) {
+	if (!AzurukPlayerPawn(Pawn).bInMenu && AzurukPlayerPawn(Pawn).CanMorph(0) && Pawn.Physics != PHYS_Falling) {
 		GotoState('Transforming');
 		morphInput = 0;
 	}
@@ -33,7 +33,7 @@ exec function TransformOne()
 
 exec function TransformTwo()
 {
-	if (!AzurukPlayerPawn(Pawn).bInMenu && AzurukPlayerPawn(Pawn).CanMorph(1)) {
+	if (!AzurukPlayerPawn(Pawn).bInMenu && AzurukPlayerPawn(Pawn).CanMorph(1) && Pawn.Physics != PHYS_Falling) {
 		GotoState('Transforming');
 		morphInput = 1;
 	}
