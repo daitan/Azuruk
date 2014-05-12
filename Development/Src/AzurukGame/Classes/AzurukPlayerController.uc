@@ -22,6 +22,28 @@ function bool PerformedUseAction()
 	return AzurukPlayerPawn(Pawn).GetMorphSet();
 }
 
+function name ReturnTransitionState()
+{
+	switch (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType)
+	{
+		case M_PlayerWalking:
+			return 'PlayerWalking';
+		break;
+
+		case M_CreatureWalking:
+			return 'CreatureWalking';
+		break;
+
+		case M_CreatureFlying:
+			return 'CreatureFlying';
+		break;
+
+		case M_Behemoth:
+			return 'Behemoth';					
+		break;
+	}
+}
+
 state Stunned
 {
 	event BeginState(name PreviousStateName)
@@ -40,18 +62,7 @@ state PlayerWalking
 {
 	function ProcessMove(float DeltaTime, vector NewAccel, eDoubleClickDir DoubleClickMove, rotator DeltaRot)
 	{
-		if( Pawn == None )
-		{
-			return;
-		}
-
-		if (Role == ROLE_Authority)
-		{
-			// Update ViewPitch for remote clients
-			Pawn.SetRemoteViewPitch( Rotation.Pitch );
-		}
-
-		Pawn.Acceleration = NewAccel;
+		super.ProcessMove(DeltaTime, NewAccel, DoubleClickMove, DeltaRot);
 
 		if ( (DoubleClickMove == DCLICK_Active) && (Pawn.Physics == PHYS_Falling) )
 			DoubleClickDir = DCLICK_Active;
@@ -64,9 +75,7 @@ state PlayerWalking
 
 	function PlayerMove( float DeltaTime )
 	{
-		local vector			X,Y,Z, NewAccel;
-		local eDoubleClickDir	DoubleClickMove;
-		local rotator			OldRotation;
+		super.PlayerMove(DeltaTime);
 
 		if( Pawn == None )
 		{
@@ -74,44 +83,9 @@ state PlayerWalking
 		}
 		else
 		{
-			GetAxes(Pawn.Rotation,X,Y,Z);
-
-			switch (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType)
+			if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType != M_PlayerWalking)
 			{
-				case M_CreatureWalking:
-					GotoState('CreatureWalking');
-					break;
-				case M_CreatureFlying:
-					GotoState('CreatureFlying');
-					break;
-				case M_Behemoth:
-					GotoState('Behemoth');					
-					break;
-			}
-
-			// Update acceleration.
-			NewAccel = PlayerInput.aForward * X + PlayerInput.aStrafe * Y;
-			NewAccel.Z	= 0;
-			NewAccel = Pawn.AccelRate * Normal(NewAccel);
-
-			if (IsLocalPlayerController())
-			{
-				AdjustPlayerWalkingMoveAccel(NewAccel);
-			}
-
-			DoubleClickMove = PlayerInput.CheckForDoubleClickMove( DeltaTime/WorldInfo.TimeDilation );
-
-			// Update rotation.
-			OldRotation = Rotation;
-			UpdateRotation( DeltaTime );
-
-			if( Role < ROLE_Authority ) // then save this move and replicate it
-			{
-				ReplicateMove(DeltaTime, NewAccel, DoubleClickMove, OldRotation - Rotation);
-			}
-			else
-			{
-				ProcessMove(DeltaTime, NewAccel, DoubleClickMove, OldRotation - Rotation);
+				GotoState(ReturnTransitionState());
 			}
 		}
 	}
@@ -134,10 +108,9 @@ state CreatureWalking
 		{
 			GetAxes(Pawn.Rotation,X,Y,Z);
 
-			// If pawnMoveType is default
-			if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType == M_PlayerWalking)
+			if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType != M_CreatureWalking)
 			{
-				GotoState(Pawn.LandMovementState);					
+				GotoState(ReturnTransitionState());
 			}
 
 			// Update acceleration.
@@ -171,11 +144,7 @@ state CreatureWalking
 	{
 		DoubleClickDir = DCLICK_None;
 		GroundPitch = 0;
-		if ( Pawn != None )
-		{
-			if (Pawn.Physics != PHYS_Falling && Pawn.Physics != PHYS_RigidBody) // FIXME HACK!!!
-				Pawn.SetPhysics(Pawn.WalkingPhysics);
-		}
+		Pawn.SetPhysics(Pawn.WalkingPhysics);
 	}
 
 	event EndState(Name NextStateName)
@@ -192,9 +161,9 @@ state CreatureFlying
 	{
 		local vector X,Y,Z;
 
-		if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType == M_PlayerWalking)
+		if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType != M_CreatureFlying)
 		{
-			GotoState(Pawn.LandMovementState);					
+			GotoState(ReturnTransitionState());
 		}
 
 		GetAxes(Rotation,X,Y,Z);
@@ -239,10 +208,9 @@ state Behemoth extends CreatureWalking
 		{
 			GetAxes(Pawn.Rotation,X,Y,Z);
 
-			// If pawnMoveType is default
-			if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType == M_PlayerWalking)
+			if (AzurukPlayerPawn(Pawn).currentFeatures.pawnMoveType != M_Behemoth)
 			{
-				GotoState(Pawn.LandMovementState);					
+				GotoState(ReturnTransitionState());
 			}
 
 			tGroundSpeed = Pawn.GroundSpeed;
