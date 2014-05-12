@@ -1,6 +1,8 @@
 class AzurukController extends PlayerController
 	config(Game);
 
+var int morphInput;
+
 /*
  * Camera Zoom Execute Functions
  */
@@ -23,15 +25,17 @@ class AzurukController extends PlayerController
  */
 exec function TransformOne()
 {
-	if (!AzurukPlayerPawn(Pawn).bInMenu) {
+	if (!AzurukPlayerPawn(Pawn).bInMenu && AzurukPlayerPawn(Pawn).CanMorph(0)) {
 		GotoState('Transforming');
+		morphInput = 0;
 	}
 }
 
 exec function TransformTwo()
 {
-	if (!AzurukPlayerPawn(Pawn).bInMenu) {
+	if (!AzurukPlayerPawn(Pawn).bInMenu && AzurukPlayerPawn(Pawn).CanMorph(1)) {
 		GotoState('Transforming');
+		morphInput = 1;
 	}
 }
 

@@ -50,6 +50,18 @@ simulated event PostInitAnimTree(SkeletalMeshComponent SkelComp)
 	}
 }
 
+function bool CanMorph(int index)
+{
+	if (index < 0) {
+		return false;
+	}
+	else if (morphSets[index].pawnMesh == none && MorphEnergyCurrent[index] != 0)
+	{
+		return false;
+	}
+	return true;
+}
+
 /*
  * SetMorphSet
  * 
@@ -57,14 +69,7 @@ simulated event PostInitAnimTree(SkeletalMeshComponent SkelComp)
  */
 function SetMorphSet(int index)
 {
-	if (index < 0) {
-		`log("No Morph Found");
-	}
-	else if (morphSets[index].pawnMesh == none && MorphEnergyCurrent[index] != 0)
-	{
-		`log("Can't Morph");
-	}
-	else if (morphSets[index] != currentFeatures)
+	if (morphSets[index] != currentFeatures)
 	{
 		if (MorphCurrentForm == 1)
 		{
@@ -79,6 +84,7 @@ function SetMorphSet(int index)
 		Mesh.SetSkeletalMesh(currentFeatures.pawnMesh);
 		Mesh.AnimSets[0] = currentFeatures.pawnAnimSet;
 		Mesh.SetAnimTreeTemplate(currentFeatures.pawnAnimTree);
+		customAnim = AnimNodePlayCustomAnim(Mesh.FindAnimNode('IdleCustom'));
 		GetCreatureWeapon(currentFeatures.CreatureName);
 		
 		if (MorphCurrentForm == 1)

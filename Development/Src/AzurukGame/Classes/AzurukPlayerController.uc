@@ -58,18 +58,26 @@ Begin:
 
 state Transforming
 {
+	event BeginState(Name PreviousStateName)
+	{
+		Pawn.SetPhysics(PHYS_None);
+	}
 Begin:
-	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnim('JinRok_Morph', 1.0, 0.2, 0.2, false, false);
+	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnim('Morph', 1.0, 0.2,, false, false);
 	FinishAnim(AzurukPlayerPawn(Pawn).customAnim.GetCustomAnimNodeSeq());
-	AzurukPlayerPawn(Pawn).SetMorphSet(0);
+	AzurukPlayerPawn(Pawn).SetMorphSet(morphInput);
 	GotoState(ReturnTransitionState());
 }
 
 state DNAExtraction
 {
+	event BeginState(Name PreviousStateName)
+	{
+		Pawn.SetPhysics(PHYS_None);
+	}
 Begin:
 	Pawn.SetDesiredRotation(Rotator(AzurukPlayerPawn(Pawn).interactingPawn.Location));
-	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnim('JinRok_DNA', 1.0, 0.2, 0.2, false, false);
+	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnim('JinRok_DNA', 1.0, 0.2,, false, false);
 	FinishAnim(AzurukPlayerPawn(Pawn).customAnim.GetCustomAnimNodeSeq());
 	AzurukPlayerPawn(Pawn).GetMorphSet();
 	GotoState(ReturnTransitionState());
