@@ -11,7 +11,7 @@ DefaultProperties
 {
 	defaultMoveType = M_Behemoth
 
-	GroundSpeed = 300.00
+	GroundSpeed = 400.00
 
     Begin Object Class=SkeletalMeshComponent Name=PawnSkeletalMesh
 		SkeletalMesh=SkeletalMesh'Creatures_Behemoth.SkeletalMeshes.Skel_Behemoth'

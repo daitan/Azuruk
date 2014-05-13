@@ -51,8 +51,13 @@ function name ReturnTransitionState()
 
 state Stunned
 {
+	event BeginState(Name PreviousStateName)
+	{
+		Pawn.SetPhysics(PHYS_None);
+	}
 Begin:
-	Sleep(stunnedTime);
+	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnim('Stunned', 1.0, 0.2,, false, false);
+	FinishAnim(AzurukPlayerPawn(Pawn).customAnim.GetCustomAnimNodeSeq());
 	GotoState(ReturnTransitionState());
 }
 

@@ -28,7 +28,7 @@ state Idle
 		GotoState('Charge');
 	}
 Begin:
-	Sleep(Rand(5));
+	Sleep(4);
 	NextDecision();
 }
 
@@ -111,12 +111,11 @@ state Charge
 		// Set known player position
 		knownPos = PPawn.Location;
 		// Set charge distance
-		chargeDist = knownPos - Pawn.Location;
+		chargeDist = (knownPos - Pawn.Location) / 1.5;
 	}
 
 	event EndState(name NextStateName)
 	{
-		PPawn = none;
 		Pawn.GroundSpeed = default.tGroundSpeed;
 	}
 Begin:
@@ -129,7 +128,7 @@ Begin:
 DefaultProperties
 {
 	// Behemoth Default Values
-	speedMultiplier=00005.000000
-	maxSpeed=01000.000000
-	tGroundSpeed=0300.000000
+	speedMultiplier =00020.000000
+	maxSpeed        =02000.000000
+	tGroundSpeed    =0400.000000
 }

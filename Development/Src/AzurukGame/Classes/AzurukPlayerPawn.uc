@@ -525,14 +525,14 @@ defaultproperties
 {
 	// Dodging Defaults
 	DodgeSpeed = 1000
-	DodgeDuration = 0.3
+	DodgeDuration = 0.2
 	isDodging = false
 
 	// Morph Bar Defaults
 	MorphCurrentForm = 0;
 	MorphEnergyMax=100.0
-	MorphEnergyDrainRate=0.1
-	MorphEnergyRechargeRate=0.2
+	MorphEnergyDrainRate=0.05
+	MorphEnergyRechargeRate=0.1
 	MorphEnergyRechargeDelay=1.0
 
 	MorphEnergyCurrent[0]=100.0
