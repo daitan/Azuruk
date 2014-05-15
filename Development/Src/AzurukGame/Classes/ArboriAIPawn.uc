@@ -1,42 +1,49 @@
 class ArboriAIPawn extends AzurukPawn
 	placeable;
 
+var                 AnimNodePlayCustomAnim  AttackAnim;
 //function AddDefaultInventory()
 //{
 //	InvManager.CreateInventory(class'AzurukGame.FrankPrimaryAttack');
 //}
 
-//event PostBeginPlay()
-//{
-//	super.PostBeginPlay();
-//	AddDefaultInventory();
-//}
+event PostBeginPlay()
+{
+	super.PostBeginPlay();
+	//AddDefaultInventory();
+	AttackAnim = AnimNodePlayCustomAnim(Mesh.FindAnimNode('IdleCustom'));
+	defaultFeatures.CreatureName = "Arbori";
+}
+
+function GiveWeapon(string weaponName)
+{
+	switch (weaponName)
+	{
+		case "Swipe":
+			InvManager.DiscardInventory();
+			InvManager.CreateInventory(class'ArboriSwipeWeapon');
+			break;
+		case "None":
+			InvManager.DiscardInventory();
+			break;
+		default:
+			InvManager.DiscardInventory();
+			break;
+	}
+}
 
 DefaultProperties
 {
-	defaultMoveType = M_CreatureWalking
+	defaultMoveType = M_CreatureWalking 
 
-	RotationRate=(Pitch=20000,Yaw=60000,Roll=20000)
-
-	Begin Object Name=CollisionCylinder
-		CollisionRadius=+30.000000
-		CollisionHeight=+50.000000
-		BlockNonZeroExtent=true
-		BlockZeroExtent=true
-		BlockActors=true
-		CollideActors=true
-	End Object
-	CollisionComponent=CollisionCylinder
-	CylinderComponent=CollisionCylinder
-	Components.Add(CollisionCylinder)
-
-  //  Begin Object Class=SkeletalMeshComponent Name=PawnSkeletalMesh
-		//SkeletalMesh=SkeletalMesh''
-		//AnimSets[0]=AnimSet''
-		//AnimTreeTemplate=AnimTree''
-  //  End Object
-  //  Mesh=PawnSkeletalMesh
-  //  Components.Add(PawnSkeletalMesh)
+    Begin Object Class=SkeletalMeshComponent Name=PawnSkeletalMesh
+		SkeletalMesh=SkeletalMesh'Creature_Boss_Arbori.Creature_Boss.Skel_Arbori'
+		AnimSets[0]=AnimSet'Creature_Boss_Arbori.Creature_Boss.Arbori_AnimSet'
+		AnimTreeTemplate=AnimTree'Creature_Boss_Arbori.AnimTree.ArboriAnimTree'
+		LightEnvironment=PawnLightEnvironment
+    End Object
+    Mesh=PawnSkeletalMesh
+    Components.Add(PawnSkeletalMesh)
 
 	InventoryManagerClass=class'AzurukGame.CreatureInventoryManager'
 	ControllerClass=class'AzurukGame.ArboriAIController'

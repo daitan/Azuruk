@@ -1,4 +1,5 @@
-class ArboriTriggerVolume extends TriggerVolume;
+class ArboriTriggerVolume extends Trigger
+	placeable;
 
 var AzurukPlayerPawn PPawn;
 

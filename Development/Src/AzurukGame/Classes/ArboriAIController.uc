@@ -3,13 +3,20 @@ class ArboriAIController extends CreatureAIController;
 /**
  * Variables
  */
-var     vector              RockLocation,
-							temp_loc;
-var     AzurukPlayerPawn    PPawn;
-var     float               MeleeDistance, 
-							temp_dist;
+var                 vector                  RockLocation,
+											temp_loc;
+var                 AzurukPlayerPawn        PPawn;
+var                 float                   MeleeDistance, 
+											temp_dist;
 
-auto state Idle
+simulated event PostBeginPlay()
+{
+	super.PostBeginPlay();
+}
+
+
+
+state Idle
 {
 	event Tick(float DeltaTime)
 	{
@@ -23,18 +30,20 @@ Begin:
 }
 
 //state which decides what to do next
-state Active
+auto state Active
 {
 	event Tick(float DeltaTime)
 	{
 		PPawn = AzurukPlayerPawn(GetALocalPlayerController().Pawn);
 		temp_dist = GetDistanceToLocation(PPawn.Location);
-		if (PPawn.bInArboriBossRegion == false) {
+		`log("Active, "$temp_dist);
+		/*if (PPawn.bInArboriBossRegion == false) {
 			GotoState('Reset');
 		}
-		else if (temp_dist <= MeleeDistance)
+		else */if (temp_dist <= MeleeDistance)
 		{
-			GotoState('MeleeAttack');
+			`log('Swipe');
+			GotoState('SwipeAttack');
 		}
 		else if (temp_dist > MeleeDistance)
 		{
@@ -49,29 +58,42 @@ state Active
 			}
 		}
 	}
-	Begin:
+Begin:
 }
 
-state MeleeAttack
+state SwipeAttack
 {
-	//TODO
-	event OnAnimPlay (AnimNodeSequence SeqNode)
+Begin:
+	ArboriAIPawn(Pawn).GiveWeapon("Swipe");
+	Sleep(0.5);
+	Pawn.StartFire(0);
+	Pawn.StopFire(0);
+	`log("fire");
+	Sleep(1.0);
+	GotoState('StompAttack');
+}
+
+state StompAttack
+{
+	event OnAnimPlay(AnimNodeSequence SeqNode)
 	{
-		//Attach physics volume to socket
+		
 	}
 
-	event OnAnimEnd (AnimNodeSequence SeqNode, float PlayedTime, float ExcessTime)
+	event OnAnimEnd(AnimNodeSequence SeqNode, float PlayedTime, float ExcessTime)
 	{
-		//Destroy physics volume
 		GotoState('Active');
 	}
-	//SMC.PlayAnim('',,false);
+Begin:
+	GotoState('Active');
 }
 
 state ThrowRock
 {
 	//TODO
 	//SMC.PlayAnim('',,false);
+Begin:
+	GotoState('Active');
 }
 
 state VineAttack
@@ -89,8 +111,11 @@ state VineAttack
 		GotoState('Active');
 	}
 	//SMC.PlayAnim('',,false);
+Begin:
+	GotoState('Active');
 }
 
 DefaultProperties
 {
+	MeleeDistance=150.0
 }
