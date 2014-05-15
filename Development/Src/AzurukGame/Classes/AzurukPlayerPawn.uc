@@ -13,8 +13,6 @@ var float MorphEnergyDrainRate, MorphEnergyRechargeRate, UpdateRate,
 		  MorphEnergyMax, MorphEnergyCurrent[2], MorphEnergyRechargeDelay;
 var bool bNoEmptyMorphs, bInMenu, bInArboriBossRegion;
 
-var AnimNodePlayCustomAnim customAnim;
-
 // Dodging
 var vector DodgeVelocity;
 var int DodgeSpeed;
@@ -38,16 +36,6 @@ function PostBeginPlay()
 simulated function name GetDefaultCameraMode( PlayerController RequestedBy )
 {
 	return 'ThirdPerson';
-}
-
-simulated event PostInitAnimTree(SkeletalMeshComponent SkelComp)
-{
-	super.PostInitAnimTree(SkelComp);
-
-	if (SkelComp == Mesh)
-	{
-		customAnim = AnimNodePlayCustomAnim(SkelComp.FindAnimNode('IdleCustom'));
-	}
 }
 
 function bool CanMorph(int index)

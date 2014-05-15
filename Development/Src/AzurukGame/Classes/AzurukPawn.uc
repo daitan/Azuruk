@@ -28,6 +28,8 @@ Struct PawnFeatures
  */
 var() const DynamicLightEnvironmentComponent LightEnvironment;
 
+var AnimNodePlayCustomAnim customAnim;
+
 // spawn location
 var vector          spawnLoc;
 
@@ -52,6 +54,16 @@ function PostBeginPlay()
 	defaultFeatures.pawnAnimTree = Mesh.AnimTreeTemplate;
 	defaultFeatures.pawnMoveType = defaultMoveType;
 	currentFeatures = defaultFeatures;
+}
+
+simulated event PostInitAnimTree(SkeletalMeshComponent SkelComp)
+{
+	super.PostInitAnimTree(SkelComp);
+
+	if (SkelComp == Mesh)
+	{
+		customAnim = AnimNodePlayCustomAnim(SkelComp.FindAnimNode('IdleCustom'));
+	}
 }
 
 /*

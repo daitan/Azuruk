@@ -3,7 +3,7 @@ class AzurukPlayerController extends AzurukController;
 /*
  * Variables
  */
-var float stunnedTime;
+var float stunnedTime, morphTime, extractTime;
 
 // Behemoth Variables
 var float   defaultGroundSpeed, 
@@ -56,7 +56,7 @@ state Stunned
 		Pawn.SetPhysics(PHYS_None);
 	}
 Begin:
-	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnim('Stunned', 1.0, 0.2,, false, false);
+	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnimByDuration('Stunned', stunnedTime, 0.1, 0.1, false, false);
 	FinishAnim(AzurukPlayerPawn(Pawn).customAnim.GetCustomAnimNodeSeq());
 	GotoState(ReturnTransitionState());
 }
@@ -68,7 +68,7 @@ state Transforming
 		Pawn.SetPhysics(PHYS_None);
 	}
 Begin:
-	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnim('Morph', 1.0, 0.2,, false, false);
+	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnimByDuration('Morph', morphTime, 0.1, 0.1, false, false);
 	FinishAnim(AzurukPlayerPawn(Pawn).customAnim.GetCustomAnimNodeSeq());
 	AzurukPlayerPawn(Pawn).SetMorphSet(morphInput);
 	GotoState(ReturnTransitionState());
@@ -82,7 +82,7 @@ state DNAExtraction
 	}
 Begin:
 	Pawn.SetDesiredRotation(Rotator(AzurukPlayerPawn(Pawn).interactingPawn.Location));
-	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnim('JinRok_DNA', 1.0, 0.2,, false, false);
+	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnimByDuration('JinRok_DNA', extractTime, 0.1, 0.1, false, false);
 	FinishAnim(AzurukPlayerPawn(Pawn).customAnim.GetCustomAnimNodeSeq());
 	AzurukPlayerPawn(Pawn).GetMorphSet();
 	GotoState(ReturnTransitionState());
@@ -310,6 +310,8 @@ function ProcessViewRotation( float DeltaTime, out Rotator out_ViewRotation, Rot
 defaultproperties
 {
 	stunnedTime=3.0
+	morphTime=2.0
+	extractTime=2.0
 
 	// Behemoth Default Values
 	defaultGroundSpeed= 00600.000000
