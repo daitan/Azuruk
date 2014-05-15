@@ -56,11 +56,21 @@ Begin:
 
 state Stunned
 {
+	local name PrevState;
+
 	event BeginState(name PreviousStateName)
 	{
-		GotoState(PreviousStateName);
+		Pawn.SetPhysics(PHYS_None);
+		PrevState = PreviousStateName;			
+	}
+
+	event EndState(name NextStateName)
+	{
+		Pawn.SetPhysics(Pawn.WalkingPhysics);
 	}
 Begin:
+	Sleep(stunnedTime);
+	GotoState(PrevState);
 }
 
 DefaultProperties

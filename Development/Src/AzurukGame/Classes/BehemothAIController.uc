@@ -108,10 +108,14 @@ state Charge
 
 	event BeginState(name PreviousStateName)
 	{
+		if (PreviousStateName == 'Stunned')
+		{
+			GotoState('Scanforplayer');
+		}
 		// Set known player position
 		knownPos = PPawn.Location;
 		// Set charge distance
-		chargeDist = (knownPos - Pawn.Location) / 1.5;
+		chargeDist = knownPos - Pawn.Location;
 	}
 
 	event EndState(name NextStateName)
