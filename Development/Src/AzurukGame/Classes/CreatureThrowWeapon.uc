@@ -1,32 +1,46 @@
 class CreatureThrowWeapon extends Weapon;
 
-var()				float			HoldDistanceMin;
-var()				float			HoldDistanceMax;
-var()				float			ThrowImpulse;
-var()				float			ChangeHoldDistanceIncrement;
+var()				float			        HoldDistanceMin;
+var()				float			        HoldDistanceMax;
+var()				float			        ThrowImpulse;
+var()				float			        ChangeHoldDistanceIncrement;
 
-var					RB_Handle		PhysicsGrabber;
-var					float			HoldDistance;
-var					Quat			HoldOrientation;
+var					RB_Handle		        PhysicsGrabber;
+var					float			        HoldDistance;
+var					Quat			        HoldOrientation;
 
+var                 vector                  PlayerHitTarget;
+var                 vector                  PawnEyeLocation;
+
+var                 AzurukPlayerController  APC;
+var                 AzurukPlayerPawn        AP;
+
+var                 bool                    bAttached;
+
+reliable client function ClientGivenTo(Pawn NewOwner, bool bDoNotActivate)
+{
+	super.ClientGivenTo(NewOwner, bDoNotActivate);
+	AP = AzurukPlayerPawn(Owner);
+	APC = AzurukPlayerController(AP.GetALocalPlayerController());
+}
 
 simulated function PostBeginPlay()
 {
-	Super.PostbeginPlay();
+	super.PostBeginPlay();
 }
 
 simulated function StartFire(byte FireModeNum)
 {
-	local vector					StartShot, EndShot;
-	local vector					HitLocation, HitNormal, Extent;
-	local actor						HitActor;
-	local float						HitDistance;
-	local Quat						PawnQuat, InvPawnQuat, ActorQuat;
-	local TraceHitInfo				HitInfo;
-	local SkeletalMeshComponent		SkelComp;
-	local Rotator					Aim;
-	local StaticMeshComponent HitComponent;
-	local KActorFromStatic NewKActor;
+	local vector					        StartShot, EndShot;
+	local vector					        HitLocation, HitNormal, Extent;
+	local actor						        HitActor;
+	local float						        HitDistance;
+	local Quat						        PawnQuat, InvPawnQuat, ActorQuat;
+	local TraceHitInfo				        HitInfo;
+	local SkeletalMeshComponent		        SkelComp;
+	local Rotator					        Aim;
+	local StaticMeshComponent               HitComponent;
+	local KActorFromStatic                  NewKActor;
 
 	if ( Role < ROLE_Authority )
 		return;
@@ -35,7 +49,7 @@ simulated function StartFire(byte FireModeNum)
 	StartShot	= Instigator.GetWeaponStartTraceLocation();
 	Aim			= GetAdjustedAim( StartShot );
 	EndShot		= StartShot + (10000.0 * Vector(Aim));
-	Extent		= vect(0,0,0);
+	Extent		= vect(20,20,0);
 	HitActor	= Trace(HitLocation, HitNormal, EndShot, StartShot, True, Extent, HitInfo, TRACEFLAG_Bullet);
 	HitDistance = VSize(HitLocation - StartShot);
 
@@ -51,7 +65,6 @@ simulated function StartFire(byte FireModeNum)
 
 		//	if(HitInfo.PhysMaterial.ImpactEffect != none)
 		//	{
-		//		WorldInf
 		//		o.MyEmitterPool.SpawnEmitter(HitInfo.PhysMaterial.ImpactEffect, HitLocation, rotator(HitNormal), none);
 		//	}
 		//}
@@ -87,9 +100,9 @@ simulated function StartFire(byte FireModeNum)
 			// If we succesfully grabbed something, store some details.
 			if (PhysicsGrabber.GrabbedComponent != None)
 			{
-				HoldDistance	= 150;
 				PawnQuat		= QuatFromRotator( Rotation );
 				InvPawnQuat		= QuatInvert( PawnQuat );
+				GotoState('Pickup');
 
 				if ( HitInfo.BoneName != '' )
 				{
@@ -106,41 +119,55 @@ simulated function StartFire(byte FireModeNum)
 	}
 	else if(FireModeNum == 1)
 	{
+		GotoState('Throw');
 		if ( PhysicsGrabber.GrabbedComponent != None )
 		{
+			bAttached = false;
+			//AzurukPlayerPawn(Owner).Mesh.DetachComponent(PhysicsGrabber.GrabbedComponent);
 			PhysicsGrabber.GrabbedComponent.AddImpulse(Vector(GetAdjustedAim(Instigator.GetWeaponStartTraceLocation())) * ThrowImpulse);
 			PhysicsGrabber.GrabbedComponent.SetActorCollision(true, true);
 			PhysicsGrabber.ReleaseComponent();
 		}
 		else
 		{
-			`log("fire");
 			Super.StartFire( FireModeNum );
 		}
 	}
 }
 
-//simulated function StopFire(byte FireModeNum)
-//{
-//	Super.StopFire( FireModeNum );
-//}
-
-simulated function bool DoOverridePrevWeapon()
+state Pickup
 {
-	HoldDistance += ChangeHoldDistanceIncrement;
-	HoldDistance = FMin(HoldDistance, HoldDistanceMax);
-	return false;
+	event BeginState(Name PreviousStateName)
+	{
+		AP.SetPhysics(PHYS_None);
+	}
+
+Begin:
+	AP.customAnim.PlayCustomAnim('frank_suck', 1.0);
+	FinishAnim(AP.customAnim.GetCustomAnimNodeSeq());
+	APC.GotoState('PlayerWalking');
+	APC.GotoState(APC.ReturnTransitionState());
+	GotoState('Active');
 }
 
-simulated function bool DoOverrideNextWeapon()
+state Throw
 {
-	HoldDistance -= ChangeHoldDistanceIncrement;
-	HoldDistance = FMax(HoldDistance, HoldDistanceMin);
-	return false;
+	event BeginState(Name PreviousStateName)
+	{
+		AP.SetPhysics(PHYS_None);
+	}
+	
+Begin:
+	AP.customAnim.PlayCustomAnim('frank_blow', 1.0);
+	FinishAnim(AP.customAnim.GetCustomAnimNodeSeq());
+	APC.GotoState('PlayerWalking');
+	APC.GotoState(APC.ReturnTransitionState());
+	GotoState('Active');
 }
 
 simulated function Tick( float DeltaTime )
 {
+	local float     ObjectDistance;
 	local vector	NewHandlePos, StartLoc;
 	local Quat		PawnQuat, NewHandleOrientation;
 	local Rotator	Aim;
@@ -157,22 +184,37 @@ simulated function Tick( float DeltaTime )
 	{
 		StartLoc		= Instigator.GetWeaponStartTraceLocation();
 		Aim				= GetAdjustedAim( StartLoc );
-		NewHandlePos	= StartLoc + (HoldDistance * Vector(Aim));
-		PhysicsGrabber.SetLocation( NewHandlePos );
+		ObjectDistance = VSize(PhysicsGrabber.Location - Owner.Location);
 
-		// Update handle orientation on grabbed actor.
-		PawnQuat				= QuatFromRotator( Rotation );
-		NewHandleOrientation	= QuatProduct(PawnQuat, HoldOrientation);
-		PhysicsGrabber.SetOrientation( NewHandleOrientation );
+		//if (ObjectDistance < HoldDistance + 100) 
+		//{
+		//	if (bAttached == false)
+		//	{
+		//		bAttached = true;
+		//		AzurukPlayerPawn(Owner).Mesh.AttachComponentToSocket(PhysicsGrabber.GrabbedComponent, 'HoldItem');
+		//	}
+		//}
+		//else
+		//{
+			NewHandlePos	= Owner.Location + (Vector(Aim) * HoldDistance) + vect(0,0,30); //StartLoc + (HoldDistance * Vector(Aim));
+			PhysicsGrabber.SetLocation( NewHandlePos );
+
+			// Update handle orientation on grabbed actor.
+			PawnQuat				= QuatFromRotator( Rotation );
+			NewHandleOrientation	= QuatProduct(PawnQuat, HoldOrientation);
+			PhysicsGrabber.SetOrientation( NewHandleOrientation );
+		//}
 	}
 }
 
 defaultproperties
 {
+	HoldDistance=150.0
 	HoldDistanceMin=0.0
 	HoldDistanceMax=750.0
 	ThrowImpulse=2500.0
 	ChangeHoldDistanceIncrement=50.0
+	bAttached=false
 
 	Begin Object Class=RB_Handle Name=RB_Handle0
 		LinearDamping=1.0

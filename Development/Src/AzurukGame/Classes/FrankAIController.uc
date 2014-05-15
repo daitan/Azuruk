@@ -114,7 +114,7 @@ state KnockbackPlayer
 Begin:
 	Pawn.ZeroMovementVariables();
 	while (distanceToPlayer <= minimumPrimaryAttackDistance) {
-		Sleep(1.0);
+		Sleep(0.2);
 		Pawn.LockDesiredRotation(false);
 		Pawn.SetDesiredRotation(Rotator(PPawn.Location - Pawn.Location));
 		Pawn.LockDesiredRotation(true, false);

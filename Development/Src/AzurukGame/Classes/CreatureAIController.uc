@@ -56,11 +56,24 @@ Begin:
 
 state Stunned
 {
+	local name PrevState;
+	local AnimNodePlayCustomAnim customAnim;
+
 	event BeginState(name PreviousStateName)
 	{
-		GotoState(PreviousStateName);
+		Pawn.SetPhysics(PHYS_None);
+		customAnim = AnimNodePlayCustomAnim(Pawn.Mesh.FindAnimNode('IdleCustom'));
+		PrevState = PreviousStateName;			
+	}
+
+	event EndState(name NextStateName)
+	{
+		Pawn.SetPhysics(Pawn.WalkingPhysics);
 	}
 Begin:
+	customAnim.PlayCustomAnimByDuration('Stunned', stunnedTime, 0.1, 0.1, false, false);
+	FinishAnim(customAnim.GetCustomAnimNodeSeq());
+	GotoState(PrevState);
 }
 
 DefaultProperties

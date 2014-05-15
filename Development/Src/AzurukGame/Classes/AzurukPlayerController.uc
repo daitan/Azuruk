@@ -3,7 +3,7 @@ class AzurukPlayerController extends AzurukController;
 /*
  * Variables
  */
-var float stunnedTime;
+var float stunnedTime, morphTime, extractTime;
 
 // Behemoth Variables
 var float   defaultGroundSpeed, 
@@ -56,7 +56,7 @@ state Stunned
 		Pawn.SetPhysics(PHYS_None);
 	}
 Begin:
-	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnim('Stunned', 1.0, 0.2,, false, false);
+	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnimByDuration('Stunned', stunnedTime, 0.1, 0.1, false, false);
 	FinishAnim(AzurukPlayerPawn(Pawn).customAnim.GetCustomAnimNodeSeq());
 	GotoState(ReturnTransitionState());
 }
@@ -68,7 +68,7 @@ state Transforming
 		Pawn.SetPhysics(PHYS_None);
 	}
 Begin:
-	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnim('Morph', 1.0, 0.2,, false, false);
+	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnimByDuration('Morph', morphTime, 0.1, 0.1, false, false);
 	FinishAnim(AzurukPlayerPawn(Pawn).customAnim.GetCustomAnimNodeSeq());
 	AzurukPlayerPawn(Pawn).SetMorphSet(morphInput);
 	GotoState(ReturnTransitionState());
@@ -82,7 +82,7 @@ state DNAExtraction
 	}
 Begin:
 	Pawn.SetDesiredRotation(Rotator(AzurukPlayerPawn(Pawn).interactingPawn.Location));
-	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnim('JinRok_DNA', 1.0, 0.2,, false, false);
+	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnimByDuration('JinRok_DNA', extractTime, 0.1, 0.1, false, false);
 	FinishAnim(AzurukPlayerPawn(Pawn).customAnim.GetCustomAnimNodeSeq());
 	AzurukPlayerPawn(Pawn).GetMorphSet();
 	GotoState(ReturnTransitionState());
@@ -307,9 +307,43 @@ function ProcessViewRotation( float DeltaTime, out Rotator out_ViewRotation, Rot
 	super.ProcessViewRotation(DeltaTime, out_ViewRotation, DeltaRot);
 }
 
+///**
+// * Adjusts weapon aiming direction.
+// * Gives controller a chance to modify the aiming of the pawn. For example aim error, auto aiming, adhesion, AI help...
+// * Requested by weapon prior to firing.
+// *
+// * @param	W, weapon about to fire
+// * @param	StartFireLoc, world location of weapon fire start trace, or projectile spawn loc.
+// */
+//function Rotator GetAdjustedAimFor( Weapon W, vector StartFireLoc )
+//{
+//	local AzurukPlayerPawn P;
+//	local Rotator R;
+//	local Vector V;
+//	P = AzurukPlayerPawn(Pawn);
+//	// by default, return Rotation. This is the standard aim for controllers
+//	// see implementation for PlayerController.
+//	if ( Pawn != None )
+//	{
+//		// Gets the vector for our aim adjustment by taking the result of
+//        // our HitLocation from running Trace() when our camera updates
+//        // and subtracting from it our current location
+//		V = P.PlayerHitTarget - P.PawnEyeLocation;
+
+//                //Cast our Vector to a Rotator
+//		R = Rotator(V);
+		
+//                //Return our adjusted aim Rotator
+//		return R;		
+//	}
+//	return Rotation;
+//}
+
 defaultproperties
 {
 	stunnedTime=3.0
+	morphTime=2.0
+	extractTime=2.0
 
 	// Behemoth Default Values
 	defaultGroundSpeed= 00600.000000

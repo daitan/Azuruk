@@ -15,7 +15,7 @@ event PostBeginPlay()
 
 DefaultProperties
 {
-	defaultMoveType = M_CreatureWalking
+	defaultMoveType = M_CreatureWalking 
 
     Begin Object Class=SkeletalMeshComponent Name=PawnSkeletalMesh
 		SkeletalMesh=SkeletalMesh'Creatures_Frank.SkeletalMeshes.frank'

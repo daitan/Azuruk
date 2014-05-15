@@ -28,6 +28,8 @@ Struct PawnFeatures
  */
 var() const DynamicLightEnvironmentComponent LightEnvironment;
 
+var AnimNodePlayCustomAnim customAnim;
+
 // spawn location
 var vector          spawnLoc;
 
@@ -54,6 +56,16 @@ function PostBeginPlay()
 	currentFeatures = defaultFeatures;
 }
 
+simulated event PostInitAnimTree(SkeletalMeshComponent SkelComp)
+{
+	super.PostInitAnimTree(SkelComp);
+
+	if (SkelComp == Mesh)
+	{
+		customAnim = AnimNodePlayCustomAnim(SkelComp.FindAnimNode('IdleCustom'));
+	}
+}
+
 /*
  * Returns the features of the Pawn
  */
@@ -72,7 +84,7 @@ event Bump(Actor Other, PrimitiveComponent OtherComp, Vector HitNormal)
 
 	otherPawn = Pawn(Other);
 	otherKActor = KActor(Other);
-	
+
 	if (GroundSpeed > 700 && self.currentFeatures.pawnMoveType == M_Behemoth)
 	{
 		if (otherPawn != none)
@@ -84,9 +96,22 @@ event Bump(Actor Other, PrimitiveComponent OtherComp, Vector HitNormal)
 		else if (otherKActor != none)
 		{
 			Momentum = Normal(otherKActor.Location + Location) * hitMomentum;
-			otherKActor.TakeDamage(chargeDamage, Instigator.Controller, HitNormal, Momentum, class'DmgType_Crushed');
+			otherKActor.TakeDamage(chargeDamage, self.Controller, HitNormal, Momentum, class'DmgType_Crushed');
 		}
 	}
+}
+
+event HitWall(Vector HitNormal, Actor Wall, PrimitiveComponent WallComp)
+{
+	//local Vector Momentum;
+
+	if (GroundSpeed > 700 && self.currentFeatures.pawnMoveType == M_Behemoth)
+	{
+		//Momentum = Normal(Wall.Location + Location) * hitMomentum;
+		//self.TakeDamage(chargeDamage, self.Controller, HitNormal, Momentum, class'DamageType');
+		self.Controller.GotoState('Stunned');
+	}
+	super.HitWall(HitNormal, Wall, WallComp);
 }
 
 //simulated function PlayDying(class<DamageType> DamageType, vector HitLoc)
@@ -270,6 +295,7 @@ defaultproperties
 	bCollideWorld = true
 	bBlockActors = true
 	bCollideActors = true
+	bDirectHitWall = true
 
 	Begin Object Class=DynamicLightEnvironmentComponent Name=PawnLightEnvironment
         bSynthesizeSHLight=true

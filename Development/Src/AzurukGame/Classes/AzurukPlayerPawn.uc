@@ -13,13 +13,14 @@ var float MorphEnergyDrainRate, MorphEnergyRechargeRate, UpdateRate,
 		  MorphEnergyMax, MorphEnergyCurrent[2], MorphEnergyRechargeDelay;
 var bool bNoEmptyMorphs, bInMenu, bInArboriBossRegion;
 
-var AnimNodePlayCustomAnim customAnim;
-
 // Dodging
 var vector DodgeVelocity;
 var int DodgeSpeed;
 var bool isDodging;
 var float dodgeDuration;
+
+//// TP Aiming Variables
+//var vector PlayerHitTarget, PawnEyeLocation;
 
 /*
  * AzurukPlayerPawn Initializations
@@ -38,16 +39,6 @@ function PostBeginPlay()
 simulated function name GetDefaultCameraMode( PlayerController RequestedBy )
 {
 	return 'ThirdPerson';
-}
-
-simulated event PostInitAnimTree(SkeletalMeshComponent SkelComp)
-{
-	super.PostInitAnimTree(SkelComp);
-
-	if (SkelComp == Mesh)
-	{
-		customAnim = AnimNodePlayCustomAnim(SkelComp.FindAnimNode('IdleCustom'));
-	}
 }
 
 function bool CanMorph(int index)
@@ -520,6 +511,24 @@ event UnTouch(Actor Other)
         interactingPawn = none;
     }
 }
+
+///**
+// * CalcCamera overrides
+// */
+//simulated function bool CalcCamera(float fDeltaTime, out vector out_CamLoc, out rotator out_CamRot, out float out_FOV)
+//{
+//	local Vector end, HitLocation, HitNormal;
+
+//	end = out_CamLoc + Normal(vector(out_CamRot))*100;
+	
+//	Trace(HitLocation, HitNormal, end, out_CamLoc, true);
+
+//	PlayerHitTarget = HitLocation;
+//	PawnEyeLocation = Location + EyeHeight * vect(0,0,1);
+
+//	super.CalcCamera(fDeltaTime, out_CamLoc, out_CamRot, out_FOV);
+//	return false;
+//}
 
 defaultproperties
 {
