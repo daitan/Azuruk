@@ -100,9 +100,9 @@ function SetMorphSet(int index)
 	}
 }
 
-function GetCreatureWeapon(string name)
+function GetCreatureWeapon(string weaponName)
 {
-	switch (name)
+	switch (weaponName)
 	{
 		case "Frank":
 			InvManager.DiscardInventory();
@@ -553,8 +553,6 @@ defaultproperties
 	bNoEmptyMorphs=false
 	bInMenu=false
 	numStoredMorphs=0
-	IndexFirstForm=-1
-	IndexSecondForm=-1
 
 	bInArboriBossRegion=false
 
