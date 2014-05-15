@@ -8,7 +8,6 @@ simulated event PostBeginPlay()
 	self.StaticMeshComponent.SetRBChannel(RBCC_Default);
 	self.StaticMeshComponent.SetRBCollidesWithChannel(RBCC_Default,true);
 	self.SetPhysics(PHYS_RigidBody);
-
 }
 
 DefaultProperties
@@ -16,7 +15,7 @@ DefaultProperties
 	Begin Object Class=StaticMeshComponent Name=ObjectPhysicsMesh
 		bNotifyRigidBodyCollision=true
 		HiddenGame=false 
-		ColllidActors=true
+		CollideActors=true
 		BlockActors=true
 		AlwaysCheckCollision=true
 		ScriptRigidBodyCollisionThreshold=0.001
@@ -30,7 +29,7 @@ DefaultProperties
 
 	Physics=PHYS_RigidBody
 
-	bNoEnroachCheck=false
+	bNoEncroachCheck=false
 	bBlocksTeleport=true
 	bBlockActors= true
 	bCollideActors=true

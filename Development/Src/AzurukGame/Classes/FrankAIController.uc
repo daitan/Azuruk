@@ -115,9 +115,8 @@ Begin:
 	Pawn.ZeroMovementVariables();
 	while (distanceToPlayer <= minimumPrimaryAttackDistance) {
 		Sleep(0.2);
-		Pawn.LockDesiredRotation(false);
 		Pawn.SetDesiredRotation(Rotator(PPawn.Location - Pawn.Location));
-		Pawn.LockDesiredRotation(true, false);
+		FinishRotation();
 		Pawn.StartFire(0);
 		Pawn.StopFire(0);
 	}
