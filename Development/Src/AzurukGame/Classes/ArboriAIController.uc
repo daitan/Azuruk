@@ -36,7 +36,7 @@ auto state Active
 	{
 		PPawn = AzurukPlayerPawn(GetALocalPlayerController().Pawn);
 		temp_dist = GetDistanceToLocation(PPawn.Location);
-		`log("Active, "$temp_dist);
+		//`log("Active, "$temp_dist);
 		/*if (PPawn.bInArboriBossRegion == false) {
 			GotoState('Reset');
 		}

@@ -74,6 +74,11 @@ function PawnFeatures returnPawnFeatures(Pawn Other)
 	return AzurukPawn(Other).defaultFeatures;
 }
 
+function ResetMovementSpeedModifier()
+{
+	MovementSpeedModifier = default.MovementSpeedModifier;
+}
+
 event Bump(Actor Other, PrimitiveComponent OtherComp, Vector HitNormal)
 {
 	local Pawn otherPawn;
@@ -280,7 +285,8 @@ Begin:
 
 defaultproperties
 {
-	SightRadius=3000.00
+	SightRadius=+3000.00
+	PeripheralVision=-0.5
 
 	// Behemoth Defaults
 	chargeDamage = 5

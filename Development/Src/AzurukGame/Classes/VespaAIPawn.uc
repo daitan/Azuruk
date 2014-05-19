@@ -1,6 +1,11 @@
 class VespaAIPawn extends AzurukPawn
 	placeable;
 
+function AddDefaultInventory()
+{
+	InvManager.CreateInventory(class'AzurukGame.VespaPrimaryAttack');
+}
+
 event PostBeginPlay()
 {
 	super.PostBeginPlay();

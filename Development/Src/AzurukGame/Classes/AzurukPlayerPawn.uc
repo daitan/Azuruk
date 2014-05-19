@@ -102,21 +102,18 @@ function SetMorphSet(int index)
 
 function GetCreatureWeapon(string weaponName)
 {
+	InvManager.DiscardInventory();
 	switch (weaponName)
 	{
 		case "Frank":
-			InvManager.DiscardInventory();
 			InvManager.CreateInventory(class'CreatureThrowWeapon');
 			break;
 		case "Vespa":
-			InvManager.DiscardInventory();
-			InvManager.CreateInventory(class'VespaWeapon');
+			InvManager.CreateInventory(class'VespaPrimaryAttack');
 			break;
 		case "None":
-			InvManager.DiscardInventory();
 			break;
 		default:
-			InvManager.DiscardInventory();
 			break;
 	}
 }
