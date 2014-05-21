@@ -11,8 +11,8 @@ var                 ArboriAIPawn            AP;
 reliable client function ClientGivenTo(Pawn NewOwner, bool bDoNotActivate)
 {
 	super.ClientGivenTo(NewOwner, bDoNotActivate);
-	AP = ArboriAIPawn(Owner);
-	APC = ArboriAIController(AP.Controller);
+	StartSocketName = 'RightHandElbow';
+	EndSocketName = 'RightHandIndex';
 }
 
 
@@ -42,23 +42,33 @@ simulated function FireAmmunition()
 	if (HasAmmo(CurrentFireMode))
 	{
 		super.FireAmmunition();
-		GotoState('Swipe');
 	}
 }
 
 simulated state Swinging extends WeaponFiring
 {
-	 simulated event Tick(float DeltaTime)
-	 {
-		  super.Tick(DeltaTime);
-		  TraceSwing();
-	 }
+	simulated event Tick(float DeltaTime)
+	{
+		super.Tick(DeltaTime);
+		TraceSwing();
+	}
+
+	simulated event BeginState(name PreviousStateName)
+	{
+		super.BeginState(PreviousStateName);
+		ArboriAIPawn(Owner).SetPhysics(PHYS_None);
+	}
 
 	simulated event EndState(Name NextStateName)
 	{
 		super.EndState(NextStateName);
 		SetTimer(GetFireInterval(CurrentFireMode), false, nameof(ResetSwings));
 	}
+
+Begin:
+	ArboriAIPawn(Owner).AttackAnim.PlayCustomAnim('Anim_Arbori_Swipe', 1.0);
+	FinishAnim(ArboriAIPawn(Owner).AttackAnim.GetCustomAnimNodeSeq());
+	ArboriAIPawn(Owner).SetPhysics(PHYS_Walking);
 }
 
 function ResetSwings()
@@ -71,7 +81,7 @@ function Vector GetSocketLocation(Name SocketName)
 	local Vector SocketLocation;
 	local SkeletalMeshComponent SMC;
 
-	SMC = AzurukPawn(Owner).Mesh;
+	SMC = ArboriAIPawn(Owner).Mesh;
 
 	if (SMC != none && SMC.GetSocketByName(SocketName) != none)
 	{
@@ -100,14 +110,15 @@ function bool AddToSwingHitActors(Actor HitActor)
 function TraceSwing()
 {
 	local Actor HitActor;
-	local Vector HitLoc, HitNorm, StartSocket, EndSocket, Momentum;
+	local Vector HitLoc, HitNorm, StartSocket, EndSocket, Momentum, Extent;
 	local int DamageAmount;
 
+	Extent = vect(100, 100, 150);
 	EndSocket = GetSocketLocation(EndSocketName);
 	StartSocket = GetSocketLocation(StartSocketName);
 	DamageAmount = FCeil(InstantHitDamage[CurrentFireMode]);
 
-	foreach TraceActors(class'Actor', HitActor, HitLoc, HitNorm, EndSocket, StartSocket)
+	foreach TraceActors(class'Actor', HitActor, HitLoc, HitNorm, EndSocket, StartSocket, Extent)
 	{
 		if (HitActor != self && AddToSwingHitActors(HitActor))
 		{
@@ -116,21 +127,6 @@ function TraceSwing()
 		}
 	}
 }
-
-//state Swipe
-//{
-//	event BeginState(Name PreviousStateName)
-//	{
-//		AP.SetPhysics(PHYS_None);
-//	}
-
-//Begin:
-//	AP.AttackAnim.PlayCustomAnim('Anim_Arbori_Swipe', 1.0);
-//	FinishAnim(AP.AttackAnim.GetCustomAnimNodeSeq());
-//	APC.GotoState('PlayerWalking');
-//	APC.GotoState(APC.ReturnTransitionState());
-//	GotoState('Active');
-//}
 
 DefaultProperties
 {
@@ -145,8 +141,7 @@ DefaultProperties
 	WeaponFireTypes(0)=EWFT_Custom
 	InstantHitDamage(0)=25.0
 	InstantHitMomentum(0)=25000.0
-	FireInterval(0)=0.25
-
-	StartSocketName="RightHandElbow"
-	EndSocketName="RightHandIndex"
+	FireInterval(0)=2.7
+	EquipTime=0.0
+	PutDownTime=0.0
 }

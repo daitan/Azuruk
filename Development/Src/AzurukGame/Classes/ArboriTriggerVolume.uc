@@ -12,6 +12,7 @@ event Touch(Actor Other, PrimitiveComponent OtherComp, vector HitLocation, vecto
     {
         PPawn = AzurukPlayerPawn(Other);
 		PPawn.bInArboriBossRegion = true;
+		`log(PPawn.bInArboriBossRegion);
     }
 }
 
@@ -24,6 +25,7 @@ event UnTouch(Actor Other)
     {
         PPawn = AzurukPlayerPawn(Other);
 		PPawn.bInArboriBossRegion = false;
+		`log(PPawn.bInArboriBossRegion);
     }
 }
 
