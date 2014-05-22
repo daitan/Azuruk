@@ -54,9 +54,15 @@ state Stunned
 	event BeginState(Name PreviousStateName)
 	{
 		Pawn.SetPhysics(PHYS_None);
+		`log("called");
 	}
 Begin:
-	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnimByDuration('Stunned', stunnedTime, 0.1, 0.1, false, false);
+	//if (Pawn.Physics == PHYS_Falling)
+	//{
+	//	Sleep(Pawn.GetFallDuration());
+	//	Pawn.SetPhysics(PHYS_None);
+	//}
+	AzurukPlayerPawn(Pawn).customAnim.PlayCustomAnimByDuration('Stunned', stunnedTime, 0, 0.1, false, false);
 	FinishAnim(AzurukPlayerPawn(Pawn).customAnim.GetCustomAnimNodeSeq());
 	GotoState(ReturnTransitionState());
 }
@@ -341,7 +347,7 @@ function ProcessViewRotation( float DeltaTime, out Rotator out_ViewRotation, Rot
 
 defaultproperties
 {
-	stunnedTime=3.0
+	stunnedTime=1.5
 	morphTime=2.0
 	extractTime=2.0
 

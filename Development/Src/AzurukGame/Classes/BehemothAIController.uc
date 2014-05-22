@@ -18,7 +18,15 @@ function NextDecision()
 	}
 }
 
-state Idle
+function NotifyTakeHit(Controller InstigatedBy, vector HitLocation, int Damage, class<DamageType> damageType, vector Momentum)
+{
+	super.NotifyTakeHit(Instigatedby, Hitlocation, Damage, DamageType, Momentum);
+	
+	PPawn = GetALocalPlayerController().Pawn;
+	GotoState('Charge');
+}
+
+auto state Idle
 {
 	// Player is seen - Charge
 	event SeePlayer(Pawn Seen)
@@ -28,11 +36,12 @@ state Idle
 		GotoState('Charge');
 	}
 Begin:
-	Sleep(4);
+	Pawn.RotationRate.Yaw = 12000;
+	Sleep(2);
 	NextDecision();
 }
 
-auto state Patrol
+state Patrol
 {
 	// Player is seen - Charge
 	event SeePlayer(Pawn Seen)
@@ -63,11 +72,14 @@ Begin:
 	}
 	
 	// Rotate towards destination
-	Pawn.SetDesiredRotation(Rotator(FindPathToward(Destination).Location));
-	FinishRotation();
-
-	//Find a path to the destination and move to the next node in the path
-	MoveToward(FindPathToward(Destination));
+	//Pawn.SetDesiredRotation(Rotator(FindPathToward(Destination).Location));
+	//FinishRotation();
+	While (!Pawn.ReachedDestination(Destination))
+	{
+		MoveTarget = FindPathToward(Destination);
+		//Find a path to the destination and move to the next node in the path
+		MoveToward(MoveTarget, MoveTarget,,false);
+	}
 
 	NextDecision();
 }
@@ -112,10 +124,6 @@ state Charge
 		{
 			GotoState('Scanforplayer');
 		}
-		// Set known player position
-		knownPos = PPawn.Location;
-		// Set charge distance
-		chargeDist = knownPos - Pawn.Location;
 	}
 
 	event EndState(name NextStateName)
@@ -123,14 +131,21 @@ state Charge
 		Pawn.GroundSpeed = default.tGroundSpeed;
 	}
 Begin:
+	// Set known player position
+	knownPos = PPawn.Location;
+	// Set charge distance
+	chargeDist = knownPos - Pawn.Location;
+	// Move toward Player
+	MoveToward(PPawn, PPawn, Abs(VSize2D(chargeDist / 6)), false);
 	// Run towards the known position
-	MoveTo(knownPos + chargeDist);
+	MoveTo(Pawn.Location + chargeDist);
 	// Look for player again
-	GotoState('Scanforplayer');
+	GotoState('Scanforplayer');	
 }
 
 DefaultProperties
 {
+	
 	// Behemoth Default Values
 	speedMultiplier =00020.000000
 	maxSpeed        =02000.000000

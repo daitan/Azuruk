@@ -1,4 +1,4 @@
-class AzurukPawn extends GamePawn
+class AzurukPawn extends Pawn
 	abstract
 	config(Game);
 
@@ -29,6 +29,8 @@ Struct PawnFeatures
 var() const DynamicLightEnvironmentComponent LightEnvironment;
 
 var AnimNodePlayCustomAnim customAnim;
+
+var bool            shouldStun;
 
 // spawn location
 var vector          spawnLoc;
@@ -92,11 +94,12 @@ event Bump(Actor Other, PrimitiveComponent OtherComp, Vector HitNormal)
 
 	if (GroundSpeed > 700 && self.currentFeatures.pawnMoveType == M_Behemoth)
 	{
-		if (otherPawn != none)
+		if (otherPawn != none && otherPawn.Physics != PHYS_Falling)
 		{
-			Momentum = Normal(otherPawn.Location + Location) * hitMomentum;
-			otherPawn.TakeDamage(chargeDamage, Instigator.Controller, HitNormal, Momentum, class'DmgType_Crushed');
-			otherPawn.Controller.GotoState('Stunned');
+			Momentum = Normal(otherPawn.Location + Location);
+			Momentum.Z = 0.5;
+			Momentum *= hitMomentum;
+			otherPawn.TakeDamage(chargeDamage, Instigator.Controller, HitNormal, Momentum, class'DmgType_Crushed');			
 		}
 		else if (otherKActor != none)
 		{
@@ -112,8 +115,6 @@ event HitWall(Vector HitNormal, Actor Wall, PrimitiveComponent WallComp)
 
 	if (GroundSpeed > 700 && self.currentFeatures.pawnMoveType == M_Behemoth)
 	{
-		//Momentum = Normal(Wall.Location + Location) * hitMomentum;
-		//self.TakeDamage(chargeDamage, self.Controller, HitNormal, Momentum, class'DamageType');
 		self.Controller.GotoState('Stunned');
 	}
 	super.HitWall(HitNormal, Wall, WallComp);
@@ -289,8 +290,8 @@ defaultproperties
 	PeripheralVision=-0.5
 
 	// Behemoth Defaults
-	chargeDamage = 5
-	hitMomentum = 40000.0
+	chargeDamage=+5
+	hitMomentum=+100000.0
 
 	defaultMoveType = M_PlayerWalking
 

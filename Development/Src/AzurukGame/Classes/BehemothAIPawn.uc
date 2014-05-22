@@ -12,6 +12,7 @@ DefaultProperties
 	defaultMoveType = M_Behemoth
 
 	GroundSpeed = 400.00
+	RotationRate=(Pitch=50000000,Yaw=50000000,Roll=50000000)
 
     Begin Object Class=SkeletalMeshComponent Name=PawnSkeletalMesh
 		SkeletalMesh=SkeletalMesh'Creatures_Behemoth.SkeletalMeshes.Skel_Behemoth'
