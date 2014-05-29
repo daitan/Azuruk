@@ -9,6 +9,7 @@ var                 vector                  RockLocation,
 var                 AzurukPlayerPawn        PPawn;
 var                 float                   MeleeDistance, 
 											temp_dist;
+var                 Actor         SpawnedObject;
 
 simulated event PostBeginPlay()
 {
@@ -42,18 +43,17 @@ state Active
 		}
 		else if (temp_dist <= MeleeDistance)
 		{
-			`log('Swipe');
-			GotoState('SwipeAttack');
+			GotoState('StompAttack');
 		}
 		else if (temp_dist > MeleeDistance)
 		{
 			if (PPawn.currentFeatures.pawnMoveType == M_CreatureFlying)
 			{
-				GotoState('ThrowRock');
+				GotoState('PickupRock');
 			}
 			else 
 			{
-				GotoState('VineAttack');
+				GotoState('PickupRock');
 			}
 		}
 	}
@@ -63,6 +63,7 @@ Begin:
 state SwipeAttack
 {
 Begin:
+	MoveToward(GetALocalPlayerController().Pawn, GetALocalPlayerController().Pawn);
 	ArboriAIPawn(Pawn).GiveWeapon("Swipe");
 	Sleep(0.1);
 	temp_loc = GetALocalPlayerController().Pawn.Location - Pawn.Location;
@@ -72,7 +73,7 @@ Begin:
 	Pawn.StartFire(0);
 	Pawn.StopFire(0);
 	Sleep(2.7);
-	GotoState('StompAttack');
+	GotoState('Active');
 }
 
 state StompAttack
@@ -85,24 +86,56 @@ Begin:
 	HurtRadius(20.0, 512.0, class'DamageType', 25000.0, FootLocation, Pawn, self, true);
 	Sleep(1.5);
 	ArboriAIPawn(Pawn).SetPhysics(PHYS_Walking);
-	GotoState('Active');
+	GotoState('SwipeAttack');
+}
+
+state PickupRock
+{
+Begin:
+	ArboriAIPawn(Pawn).SetPhysics(PHYS_None);
+	ArboriAIPawn(Pawn).GiveWeapon("Throw");
+	ArboriAIPawn(Pawn).AttackAnim.PlayCustomAnim('Anim_Arbori_Pickup', 1.0);
+	Sleep(1.7);
+	SpawnedObject = Spawn(class'AzurukGame.ArboriRock');
+	SpawnedObject.SetBase(Pawn,,Pawn.Mesh, 'HoldItem');
+	Sleep(0.3);
+	ArboriAIPawn(Pawn).SetPhysics(PHYS_Walking);
+	GotoState('ThrowRock');
 }
 
 state ThrowRock
 {
-	//TODO
-	//SMC.PlayAnim('',,false);
 Begin:
+	temp_loc = GetALocalPlayerController().Pawn.Location - Pawn.Location;
+	Pawn.SetDesiredRotation(Rotator(temp_loc));
+	FinishRotation();
+	Pawn.SetRotation(Rotator(temp_loc));
+	SetFocalPoint(GetALocalPlayerController().Pawn.Location);
+	ArboriAIPawn(Pawn).SetPhysics(PHYS_None);
+	ArboriAIPawn(Pawn).AttackAnim.PlayCustomAnim('Anim_Arbori_Throw', 1.0);
+	Sleep(0.9);
+	SpawnedObject.SetBase(none);
+	SpawnedObject.Destroy();
+	Pawn.StartFire(0);
+	Pawn.StopFire(0);
+	Sleep(0.8);
+	ArboriAIPawn(Pawn).SetPhysics(PHYS_Walking);
 	GotoState('Active');
+	
 }
 
-state VineAttack
-{
-Begin:
-	Sleep(2.0);
-	//HurtRadius(1.0, 512.0, class'DamageType', 0.0, GetALocalPlayerController().Pawn.Location, Pawn, self, true);
-	GotoState('Active');
-}
+//state VineAttack
+//{
+//Begin:
+//	temp_loc = GetALocalPlayerController().Pawn.Location;
+//	Sleep(2.0);
+//	ArboriAIPawn(Pawn).SetPhysics(PHYS_None);
+//	ArboriAIPawn(Pawn).AttackAnim.PlayCustomAnim('Anim_Arbori_Pickup', 1.0);
+//	Sleep(2.0);
+//	ArboriAIPawn(Pawn).SetPhysics(PHYS_Walking);
+//	HurtRadius(1.0, 512.0, class'DamageType', 0.0, temp_loc, Pawn, self, true);
+//	GotoState('Active');
+//}   
 
 DefaultProperties
 {

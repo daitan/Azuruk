@@ -551,7 +551,7 @@ defaultproperties
 	bInMenu=false
 	numStoredMorphs=0
 
-	bInArboriBossRegion=true
+	bInArboriBossRegion=false
 
 	defaultMoveType = M_PlayerWalking
 	

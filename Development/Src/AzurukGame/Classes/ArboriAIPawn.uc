@@ -23,6 +23,10 @@ function GiveWeapon(string weaponName)
 			InvManager.DiscardInventory();
 			InvManager.CreateInventory(class'ArboriSwipeWeapon');
 			break;
+		case "Throw":
+			InvManager.DiscardInventory();
+			InvManager.CreateInventory(class'ArboriThrowWeapon');
+			break;
 		case "None":
 			InvManager.DiscardInventory();
 			break;
