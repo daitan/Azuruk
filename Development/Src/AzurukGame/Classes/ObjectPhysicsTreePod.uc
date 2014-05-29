@@ -81,7 +81,7 @@ simulated event PostBeginPlay()
 /** Do actual explosion. */
 simulated function Explode()
 {
-	HurtRadius(50.0, 300.0, class'DamageType', 50000.0, Location,,, True);
+	HurtRadius(20.0, 300.0, class'DamageType', 50000.0, Location,,, True);
 
 	//// Fire particles
 	//if(ParticlesOnDestroy != None)
