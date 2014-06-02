@@ -9,7 +9,8 @@ var                 vector                  RockLocation,
 var                 AzurukPlayerPawn        PPawn;
 var                 float                   MeleeDistance, 
 											temp_dist;
-var                 Actor         SpawnedObject;
+var                 Actor                   SpawnedObject;
+var                 bool                    bCanThrow;
 
 simulated event PostBeginPlay()
 {
@@ -47,17 +48,35 @@ state Active
 		}
 		else if (temp_dist > MeleeDistance)
 		{
-			if (PPawn.currentFeatures.pawnMoveType == M_CreatureFlying)
+			//if (PPawn.currentFeatures.pawnMoveType == M_CreatureFlying)
+			//{
+			//	GotoState('PickupRock');
+			//}
+			//else 
+			//{
+			if (bCanThrow)
 			{
 				GotoState('PickupRock');
 			}
-			else 
+			else
 			{
-				GotoState('PickupRock');
+				GotoState('MoveToPlayer');
 			}
+			//}
 		}
 	}
 Begin:
+}
+
+state MoveToPlayer
+{
+Begin:
+	MoveToward(GetALocalPlayerController().Pawn, GetALocalPlayerController().Pawn);
+	temp_loc = GetALocalPlayerController().Pawn.Location - Pawn.Location;
+	Pawn.SetDesiredRotation(Rotator(temp_loc));
+	FinishRotation();
+	Pawn.SetRotation(Rotator(temp_loc));
+	GotoState('StompAttack');
 }
 
 state SwipeAttack
@@ -120,8 +139,14 @@ Begin:
 	Pawn.StopFire(0);
 	Sleep(0.8);
 	ArboriAIPawn(Pawn).SetPhysics(PHYS_Walking);
+	bCanThrow = false;
+	SetTimer(8.0, false, 'ThrowCooldown');
 	GotoState('Active');
-	
+}
+
+function ThrowCooldown()
+{
+	bCanThrow = true;
 }
 
 //state VineAttack
@@ -139,5 +164,6 @@ Begin:
 
 DefaultProperties
 {
+	bCanThrow=true
 	MeleeDistance=448.0
 }
